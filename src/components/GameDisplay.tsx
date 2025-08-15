@@ -137,10 +137,19 @@ const GraphContainer = styled.div`
   z-index: 5;
   
   @media (max-width: 768px) {
-    top: 120px;
-    left: 40px;
-    right: 40px;
-    bottom: 80px;
+    top: 100px;
+    left: 20px;
+    right: 20px;
+    bottom: 120px;
+    min-height: 300px;
+  }
+  
+  @media (max-width: 480px) {
+    top: 80px;
+    left: 15px;
+    right: 15px;
+    bottom: 140px;
+    min-height: 250px;
   }
 `;
 
@@ -174,7 +183,13 @@ const MultiplierDisplay = styled.div<{ gameState: string }>`
   
   @media (max-width: 768px) {
     left: 50%;
-    top: 55%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  @media (max-width: 480px) {
+    left: 50%;
+    top: 50%;
     transform: translate(-50%, -50%);
   }
 `;
@@ -244,7 +259,12 @@ const CharacterContainer = styled(motion.div)`
   
   @media (max-width: 768px) {
     left: 50%;
-    top: 40%;
+    top: 35%;
+  }
+  
+  @media (max-width: 480px) {
+    left: 50%;
+    top: 35%;
   }
 `;
 
@@ -255,8 +275,13 @@ const Character = styled.img`
   filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.5));
   
   @media (max-width: 768px) {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 60px;
+    height: 60px;
   }
 `;
 

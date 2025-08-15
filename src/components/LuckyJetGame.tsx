@@ -403,7 +403,7 @@ const LuckyJetGame: React.FC = () => {
       {/* Audio Element */}
       <audio
         ref={audioRef}
-        src="/musics/gamebg.mp3"
+        src="/musics/casino-164235.mp3"
         preload="auto"
       />
 
