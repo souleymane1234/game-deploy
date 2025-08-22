@@ -396,8 +396,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         {getGameButtonText()}
       </GameButton>
 
-             <PlayersSection>
-         <PlayersTitle>PLAYERS</PlayersTitle>
+      <PlayersSection>
+        <PlayersTitle>PLAYERS</PlayersTitle>
         {players.map(player => (
           <PlayerItem key={player.id} isActive={player.isPlaying || false}>
             <PlayerAvatar>{player.avatar}</PlayerAvatar>
@@ -418,3 +418,4 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 };
 
 export default ControlPanel;
+

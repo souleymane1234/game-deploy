@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import LuckyJetGame from './components/LuckyJetGame';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LuckyJetGame from './games/lucky-jet/LuckyJetGame';
+import DiceGame from './games/dice/DiceGame';
+
+import Dashboard from './components/Dashboard';
 import './App.css';
 
 const AppContainer = styled.div`
@@ -11,12 +15,45 @@ const AppContainer = styled.div`
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 `;
 
+const MainContent = styled.main`
+  height: 100vh;
+  overflow: hidden;
+`;
+
 function App() {
+  const [balance, setBalance] = useState<number>(10000);
+
   return (
-    <AppContainer>
-      <LuckyJetGame />
-    </AppContainer>
+    <Router>
+      <AppContainer>
+        <MainContent>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route 
+              path="/lucky-jet" 
+              element={
+                <LuckyJetGame 
+                  balance={balance}
+                  setBalance={setBalance}
+                />
+              } 
+            />
+            <Route 
+              path="/dice" 
+              element={
+                <DiceGame 
+                  balance={balance}
+                  setBalance={setBalance}
+                />
+              } 
+            />
+
+          </Routes>
+        </MainContent>
+      </AppContainer>
+    </Router>
   );
 }
 
 export default App;
+

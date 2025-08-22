@@ -1,249 +1,193 @@
-# 🚀 Lucky Jet Game - Crash Game
+# 4WIN - Plateforme de Jeux de Casino
 
-Un jeu de crash style "Lucky Jet" développé avec ReactJS, TypeScript et WebSocket pour la synchronisation en temps réel.
+Une plateforme moderne de jeux de casino en ligne développée avec React, TypeScript et Styled Components.
 
-## ✨ Fonctionnalités
+## 🎮 Jeux Disponibles
 
-### 🎮 **Gameplay**
-- **Système de crash réaliste** : Probabilités équilibrées pour des parties équitables
-- **Multiplicateur en temps réel** : Progression exponentielle fluide
-- **Cashout manuel et automatique** : Contrôle total sur vos gains
-- **Historique des parties** : Suivi des 10 derniers résultats
-- **Interface responsive** : Optimisé pour desktop et mobile
+### ✈️ Lucky Jet
+- Jeu de crash avec multiplicateur croissant
+- Mode manuel et automatique
+- Interface immersive avec animations
+- Synchronisation en temps réel via WebSocket
 
-### 🌐 **Synchronisation Temps Réel**
-- **WebSocket** : Synchronisation parfaite entre tous les joueurs
-- **État partagé** : Décompte, multiplicateur et crash synchronisés
-- **Reconnexion automatique** : Reprise de session en cas de déconnexion
-- **Multi-utilisateurs** : Plusieurs joueurs peuvent jouer simultanément
+### 🎲 Dice Game
+- Jeu de dés classique revisité
+- 6 options de paris avec multiplicateurs différents
+- Animations fluides et interface moderne
+- Historique des résultats
 
-### 🎨 **Interface Utilisateur**
-- **Design space-themed** : Interface moderne avec thème spatial
-- **Animations fluides** : Transitions et effets visuels
-- **Responsive design** : Adaptation automatique mobile/desktop
-- **Audio intégré** : Musique d'ambiance en continu
+## 🏗️ Structure du Projet
 
-### 📱 **Optimisations Mobile**
-- **Interface adaptée** : Layout optimisé pour écrans tactiles
-- **Contrôles simplifiés** : Boutons et interactions adaptés
-- **Performance optimisée** : Chargement rapide sur mobile
+```
+4win-platform/
+├── public/
+│   ├── index.html
+│   ├── manifest.json
+│   ├── musics/
+│   │   └── casino-164235.mp3
+│   ├── players/
+│   │   └── Character.png
+│   └── sprites/
+│       └── Dice/
+│           └── DiceBG.png
+├── src/
+│   ├── components/
+│   │   └── Dashboard.tsx
+│   ├── games/
+│   │   ├── lucky-jet/
+│   │   │   ├── LuckyJetGame.tsx
+│   │   │   ├── ControlPanel.tsx
+│   │   │   └── GameDisplay.tsx
+│   │   └── dice/
+│   │       └── DiceGame.tsx
+│   ├── App.tsx
+│   ├── App.css
+│   ├── index.tsx
+│   └── index.css
+├── package.json
+├── tsconfig.json
+└── README.md
+```
 
-## 🛠️ Technologies Utilisées
-
-- **Frontend** : React 18, TypeScript, Styled Components
-- **Animations** : Framer Motion
-- **Backend** : Node.js, WebSocket (ws)
-- **Synchronisation** : WebSocket en temps réel
-- **Audio** : HTML5 Audio API
-- **Build** : Create React App
-
-## 📦 Installation
+## 🚀 Installation et Démarrage
 
 ### Prérequis
 - Node.js (version 16 ou supérieure)
 - npm ou yarn
 
-### Étapes d'installation
-
-1. **Cloner le projet**
+### Installation
 ```bash
+# Cloner le projet
 git clone <repository-url>
-cd lucky-jet-game
-```
+cd 4win-platform
 
-2. **Installer les dépendances**
-```bash
+# Installer les dépendances
 npm install
+
+# Démarrer le serveur de développement
+npm start
 ```
 
-3. **Installer les types TypeScript (si nécessaire)**
-```bash
-npm install --save-dev @types/styled-components
-```
+L'application sera accessible à l'adresse `http://localhost:3000`
 
-## 🚀 Démarrage
-
-### Mode Développement (Recommandé)
-
-1. **Démarrer le serveur WebSocket et l'application**
-```bash
-npm run dev
-```
-
-Cette commande démarre automatiquement :
-- ✅ Serveur WebSocket sur le port 3001
-- ✅ Application React sur le port 3000
-- ✅ Synchronisation en temps réel
-
-### Mode Production
-
-1. **Build de l'application**
+### Build de Production
 ```bash
 npm run build
 ```
 
-2. **Démarrer le serveur WebSocket**
-```bash
-npm run server
-```
+## 🛠️ Technologies Utilisées
 
-3. **Servir les fichiers statiques** (avec un serveur comme nginx ou serve)
-```bash
-npx serve -s build
-```
+- **React 18** - Framework JavaScript pour l'interface utilisateur
+- **TypeScript** - Typage statique pour JavaScript
+- **Styled Components** - CSS-in-JS pour le styling
+- **Framer Motion** - Animations fluides et performantes
+- **React Router** - Navigation entre les pages
+- **Lucide React** - Icônes modernes
 
-## 🌐 Accès Multi-Plateformes
+## 🎨 Design System
 
-### Test Local
-- **PC** : `http://localhost:3000`
-- **Mobile** : `http://[VOTRE_IP_LOCALE]:3000`
+### Couleurs
+- **Vert principal**: `#00ff88` - Succès, gains, actions positives
+- **Rouge**: `#ff4444` - Erreurs, pertes, actions dangereuses
+- **Orange**: `#ffa726` - Avertissements, multiplicateurs moyens
+- **Fond sombre**: `#1a1a2e` - Arrière-plan principal
+- **Fond plus sombre**: `#0a0a0f` - Arrière-plan secondaire
 
-### Test Public (avec ngrok)
-1. **Installer ngrok**
-```bash
-npm install -g ngrok
-```
+### Typographie
+- **Police principale**: Inter (Google Fonts)
+- **Tailles**: 12px, 14px, 16px, 18px, 20px, 24px, 32px, 48px
+- **Poids**: 300, 400, 500, 600, 700, 800, 900
 
-2. **Configurer ngrok**
-```bash
-ngrok config add-authtoken VOTRE_TOKEN
-```
+### Animations
+- **Transitions**: 0.3s ease pour les interactions
+- **Hover effects**: translateY(-2px) avec ombre
+- **Loading**: Spinner rotatif avec couleur verte
+- **Victoire**: Animation de pulse avec scale
 
-3. **Exposer les ports**
-```bash
-ngrok http 3000  # Pour l'application React
-ngrok http 3001  # Pour le serveur WebSocket
-```
+## 📱 Responsive Design
 
-## 🎮 Comment Jouer
-
-### Interface du Jeu
-- **Zone de jeu** : Affichage du multiplicateur et du personnage
-- **Panneau de contrôle** : Mise, cashout automatique, liste des joueurs
-- **Historique** : 10 derniers résultats en bas
-
-### Modes de Jeu
-1. **Mode Manuel**
-   - Cliquer sur "PLACE BET" pour rejoindre
-   - Cliquer sur "CASHOUT" pour retirer vos gains
-   - Contrôle total sur le moment de retrait
-
-2. **Mode Auto**
-   - Définir un multiplicateur de cashout automatique
-   - Le jeu retire automatiquement vos gains
-   - Idéal pour les stratégies de trading
-
-### Stratégies
-- **Cashout rapide** : Gains sûrs mais faibles
-- **Cashout tardif** : Risque élevé, gains potentiellement élevés
-- **Stratégie mixte** : Combiner les deux approches
+La plateforme est entièrement responsive et optimisée pour :
+- **Desktop** (1200px+)
+- **Tablet** (768px - 1199px)
+- **Mobile** (320px - 767px)
 
 ## 🔧 Configuration
 
 ### Variables d'Environnement
+Créer un fichier `.env` à la racine du projet :
+
 ```env
-PORT=3001          # Port du serveur WebSocket
-REACT_APP_WS_URL=ws://localhost:3001  # URL WebSocket (optionnel)
+REACT_APP_WS_URL=ws://localhost:3001
+REACT_APP_API_URL=http://localhost:3001
 ```
 
-### Personnalisation
-- **Musique** : Remplacer `/public/musics/gamebg.mp3`
-- **Personnage** : Remplacer `/public/players/Character.png`
-- **Thème** : Modifier les couleurs dans les styled-components
+### WebSocket Server
+Pour le jeu Lucky Jet, un serveur WebSocket est nécessaire. Voir le dossier `server/` pour plus d'informations.
 
-## 📱 Fonctionnalités Mobile
+## 🎯 Fonctionnalités
 
-### Optimisations Spécifiques
-- **Layout vertical** : Game display au-dessus du panneau de contrôle
-- **Liste des joueurs masquée** : Économie d'espace
-- **Boutons tactiles** : Taille optimisée pour les doigts
-- **Responsive design** : Adaptation automatique à tous les écrans
+### Dashboard
+- Vue d'ensemble de tous les jeux
+- Navigation intuitive
+- Statistiques globales
+- Design moderne et accueillant
 
-### Contrôles Mobile
-- **Tap pour miser** : Interface tactile intuitive
-- **Swipe pour naviguer** : Navigation fluide
-- **Audio automatique** : Démarrage au premier tap
+### Lucky Jet
+- **Mode Manuel**: Contrôle total du cashout
+- **Mode Auto**: Cashout automatique à un multiplicateur défini
+- **Historique**: 10 derniers résultats
+- **Joueurs en temps réel**: Simulation d'autres joueurs
+- **Audio**: Musique d'ambiance avec contrôles
 
-## 🔄 Synchronisation WebSocket
+### Dice Game
+- **6 options de paris**: Multiplicateurs de 4.5x à 6.0x
+- **Animations de dés**: Rotation et effets visuels
+- **Historique**: 10 derniers résultats
+- **Statistiques**: Win rate et nombre de parties
 
-### Architecture
-```
-Client 1 ←→ WebSocket Server ←→ Client 2
-   ↓              ↓              ↓
-État local    État global    État local
-```
+## 🔒 Sécurité
 
-### Messages WebSocket
-- **`gameState`** : État complet du jeu
-- **`countdown`** : Mise à jour du décompte
-- **`multiplier`** : Mise à jour du multiplicateur
-- **`crash`** : Signal de crash
+- Validation des entrées utilisateur
+- Protection contre les injections
+- Gestion sécurisée des états
+- Pas de stockage de données sensibles côté client
 
-### Avantages
-- ✅ **Synchronisation parfaite** : Tous les joueurs voient la même chose
-- ✅ **Pas de décalage** : Mises à jour en temps réel
-- ✅ **Reconnexion automatique** : Reprise de session
-- ✅ **Performance optimisée** : Messages ciblés
+## 📈 Performance
 
-## 🐛 Dépannage
+- **Lazy Loading**: Chargement à la demande des composants
+- **Memoization**: Optimisation des re-renders
+- **Code Splitting**: Séparation du code par fonctionnalité
+- **Optimisation des images**: Formats modernes et compression
 
-### Problèmes Courants
+## 🧪 Tests
 
-1. **Erreur de connexion WebSocket**
-   - Vérifier que le serveur est démarré : `npm run server`
-   - Vérifier le port 3001 n'est pas utilisé
-   - Redémarrer le serveur
-
-2. **Audio ne joue pas**
-   - Cliquer sur l'écran pour activer l'audio
-   - Vérifier que le fichier `/public/musics/gamebg.mp3` existe
-   - Vérifier les permissions du navigateur
-
-3. **Synchronisation défaillante**
-   - Vérifier la connexion WebSocket dans la console
-   - Redémarrer le serveur et les clients
-   - Vérifier les pare-feu
-
-4. **Performance lente**
-   - Fermer les onglets inutiles
-   - Vérifier la connexion internet
-   - Redémarrer l'application
-
-### Logs de Débogage
 ```bash
-# Serveur WebSocket
-npm run server
+# Lancer les tests
+npm test
 
-# Client React
-npm start
+# Tests avec couverture
+npm test -- --coverage
 ```
 
-## 📊 Structure du Projet
+## 📦 Déploiement
 
+### Netlify
+```bash
+npm run build
+# Déployer le dossier build/
 ```
-lucky-jet-game/
-├── public/
-│   ├── musics/
-│   │   └── gamebg.mp3          # Musique d'ambiance
-│   └── players/
-│       └── Character.png       # Personnage du jeu
-├── src/
-│   ├── components/
-│   │   ├── LuckyJetGame.tsx    # Composant principal
-│   │   ├── GameDisplay.tsx     # Affichage du jeu
-│   │   └── ControlPanel.tsx    # Panneau de contrôle
-│   ├── App.tsx                 # Point d'entrée
-│   └── App.css                 # Styles globaux
-├── server.js                   # Serveur WebSocket
-├── package.json                # Dépendances
-└── README.md                   # Documentation
+
+### Vercel
+```bash
+npm run build
+# Déployer automatiquement avec Vercel CLI
 ```
 
 ## 🤝 Contribution
 
 1. Fork le projet
 2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add AmazingFeature'`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
 
@@ -251,13 +195,24 @@ lucky-jet-game/
 
 Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
-## 🙏 Remerciements
+## 📞 Support
 
-- **React** : Framework frontend
-- **WebSocket** : Synchronisation temps réel
-- **Styled Components** : Styling moderne
-- **Framer Motion** : Animations fluides
+Pour toute question ou problème :
+- Ouvrir une issue sur GitHub
+- Contacter l'équipe de développement
+
+## 🔮 Roadmap
+
+- [ ] Ajout de nouveaux jeux (Roulette, Blackjack)
+- [ ] Système de leaderboard
+- [ ] Mode multijoueur
+- [ ] Intégration de crypto-monnaies
+- [ ] Application mobile (React Native)
+- [ ] Système de tournois
+- [ ] Chat en temps réel
+- [ ] Système de récompenses
 
 ---
 
-**🎮 Bon jeu et bonne chance ! 🚀**
+**4WIN** - Votre plateforme de jeux de casino de confiance 🎰
+

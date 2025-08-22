@@ -15,6 +15,11 @@ interface Player {
   cashoutMultiplier?: number;
 }
 
+interface LuckyJetGameProps {
+  balance: number;
+  setBalance: (balance: number) => void;
+}
+
 interface GameResult {
   multiplier: number;
   timestamp: number;
@@ -27,8 +32,8 @@ interface SharedGameSession {
   crashPoint: number;
   gameStatus: 'waiting' | 'running' | 'crashed';
   startTime: number;
-  gameHistory?: GameResult[]; // Ajout de l'historique
-  currentMultiplier?: number; // Ajout du multiplicateur actuel
+  gameHistory?: GameResult[];
+  currentMultiplier?: number;
 }
 
 const GameContainer = styled.div`
@@ -96,14 +101,14 @@ const VolumeSlider = styled.input`
   }
 `;
 
-const LuckyJetGame: React.FC = () => {
+const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   // États locaux
   const [gameMode, setGameMode] = useState<'manual' | 'auto'>('manual');
   const [betAmount, setBetAmount] = useState<number>(100);
   const [autoCashout, setAutoCashout] = useState<number>(2);
-  const [balance, setBalance] = useState<number>(10000);
   const [profit, setProfit] = useState<number>(0);
   const [volume, setVolume] = useState<number>(0.3);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
   
   // États synchronisés via WebSocket
   const [currentMultiplier, setCurrentMultiplier] = useState<number>(1.00);
@@ -233,16 +238,10 @@ const LuckyJetGame: React.FC = () => {
     return 9.5 + Math.random() * 20.5; // 5% chance entre 9.5-30.0
   }, []);
 
-  // Initialisation - démarrer le jeu automatiquement
-  useEffect(() => {
-    // Plus besoin d'initialiser localement, le serveur gère tout
-    // Le serveur envoie l'état initial via WebSocket
-  }, []);
-
   // Audio management - joue en permanence
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = volume;
+      audioRef.current.volume = isMuted ? 0 : volume;
       audioRef.current.loop = true;
       
       // Gérer l'autoplay avec interaction utilisateur
@@ -256,7 +255,7 @@ const LuckyJetGame: React.FC = () => {
       
       playAudio();
     }
-  }, [volume]);
+  }, [volume, isMuted]);
 
   // Ajouter un gestionnaire pour démarrer l'audio au premier clic
   useEffect(() => {
@@ -364,7 +363,7 @@ const LuckyJetGame: React.FC = () => {
   const handleCashout = useCallback(() => {
     if (gameState === 'running' && isPlaying) {
       const winnings = betAmount * currentMultiplier;
-      setBalance(prev => prev + winnings);
+      setBalance(balance + winnings);
       setProfit(winnings);
       setIsPlaying(false);
       
@@ -375,12 +374,12 @@ const LuckyJetGame: React.FC = () => {
           : player
       ));
     }
-  }, [gameState, isPlaying, betAmount, currentMultiplier]);
+  }, [gameState, isPlaying, betAmount, currentMultiplier, setBalance, balance]);
 
   // Fonction pour rejoindre le jeu
   const handleJoinGame = useCallback(() => {
     if (gameState === 'waiting' && balance >= betAmount) {
-      setBalance(prev => prev - betAmount);
+      setBalance(balance - betAmount);
       setIsPlaying(true);
       setProfit(0);
       
@@ -391,12 +390,27 @@ const LuckyJetGame: React.FC = () => {
           : player
       ));
     }
-  }, [gameState, balance, betAmount]);
+  }, [gameState, balance, betAmount, setBalance]);
 
   // Fonction de cashout manuel
   const handleManualCashout = useCallback(() => {
     handleCashout();
   }, [handleCashout]);
+
+  // Gestion de l'audio
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (newVolume === 0) {
+      setIsMuted(true);
+    } else if (isMuted) {
+      setIsMuted(false);
+    }
+  };
 
   return (
     <GameContainer>
@@ -406,6 +420,21 @@ const LuckyJetGame: React.FC = () => {
         src="/musics/casino-164235.mp3"
         preload="auto"
       />
+
+      {/* Audio Controls */}
+      <AudioControls>
+        <AudioButton onClick={toggleMute}>
+          {isMuted ? '🔇' : '🔊'}
+        </AudioButton>
+        <VolumeSlider
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={volume}
+          onChange={handleVolumeChange}
+        />
+      </AudioControls>
 
       <GameDisplay
         currentMultiplier={currentMultiplier}
@@ -438,3 +467,4 @@ const LuckyJetGame: React.FC = () => {
 };
 
 export default LuckyJetGame;
+

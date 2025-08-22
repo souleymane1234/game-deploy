@@ -320,11 +320,11 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
       <SpaceBackground />
       <Stars />
       
-             <Planets>
-         <Planet size={100} x={5} y={75} color="#6366F1" />
-         <Planet size={80} x={85} y={80} color="#14B8A6" />
-         <Planet size={60} x={80} y={15} color="#64748B" />
-       </Planets>
+      <Planets>
+        <Planet size={100} x={5} y={75} color="#6366F1" />
+        <Planet size={80} x={85} y={80} color="#14B8A6" />
+        <Planet size={60} x={80} y={15} color="#64748B" />
+      </Planets>
 
       <PreviousResults>
         {gameHistory.slice(0, 10).map((result, index) => (
@@ -335,26 +335,26 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
       </PreviousResults>
 
       <GraphContainer>
-                          <GraphGrid>
-           {/* Horizontal grid lines */}
-           <GridLine x1="0" y1="0" x2="100%" y2="0" />
-           <GridLine x1="0" y1="16.67%" x2="100%" y2="16.67%" />
-           <GridLine x1="0" y1="33.33%" x2="100%" y2="33.33%" />
-           <GridLine x1="0" y1="50%" x2="100%" y2="50%" />
-           <GridLine x1="0" y1="66.67%" x2="100%" y2="66.67%" />
-           <GridLine x1="0" y1="83.33%" x2="100%" y2="83.33%" />
-           <GridLine x1="0" y1="100%" x2="100%" y2="100%" />
-           
-           {/* Vertical grid lines */}
-           <GridLine x1="0" y1="0" x2="0" y2="100%" />
-           <GridLine x1="14.28%" y1="0" x2="14.28%" y2="100%" />
-           <GridLine x1="28.57%" y1="0" x2="28.57%" y2="100%" />
-           <GridLine x1="42.86%" y1="0" x2="42.86%" y2="100%" />
-           <GridLine x1="57.14%" y1="0" x2="57.14%" y2="100%" />
-           <GridLine x1="71.43%" y1="0" x2="71.43%" y2="100%" />
-           <GridLine x1="85.71%" y1="0" x2="85.71%" y2="100%" />
-           <GridLine x1="100%" y1="0" x2="100%" y2="100%" />
-         </GraphGrid>
+        <GraphGrid>
+          {/* Horizontal grid lines */}
+          <GridLine x1="0" y1="0" x2="100%" y2="0" />
+          <GridLine x1="0" y1="16.67%" x2="100%" y2="16.67%" />
+          <GridLine x1="0" y1="33.33%" x2="100%" y2="33.33%" />
+          <GridLine x1="0" y1="50%" x2="100%" y2="50%" />
+          <GridLine x1="0" y1="66.67%" x2="100%" y2="66.67%" />
+          <GridLine x1="0" y1="83.33%" x2="100%" y2="83.33%" />
+          <GridLine x1="0" y1="100%" x2="100%" y2="100%" />
+          
+          {/* Vertical grid lines */}
+          <GridLine x1="0" y1="0" x2="0" y2="100%" />
+          <GridLine x1="14.28%" y1="0" x2="14.28%" y2="100%" />
+          <GridLine x1="28.57%" y1="0" x2="28.57%" y2="100%" />
+          <GridLine x1="42.86%" y1="0" x2="42.86%" y2="100%" />
+          <GridLine x1="57.14%" y1="0" x2="57.14%" y2="100%" />
+          <GridLine x1="71.43%" y1="0" x2="71.43%" y2="100%" />
+          <GridLine x1="85.71%" y1="0" x2="85.71%" y2="100%" />
+          <GridLine x1="100%" y1="0" x2="100%" y2="100%" />
+        </GraphGrid>
       </GraphContainer>
 
       <MultiplierDisplay gameState={gameState}>
@@ -374,40 +374,41 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
         </CashoutButton>
       )}
 
-             {gameState === 'running' && (
-         <CharacterContainer
-           animate={{
-             y: [0, -15, 0],
-             rotate: [0, 1, -1, 0],
-             scale: [1, 1.05, 1]
-           }}
-           transition={{
-             duration: 3,
-             repeat: Infinity,
-             ease: "easeInOut"
-           }}
-         >
-           <Character src="/players/Character.png" alt="Character" />
-         </CharacterContainer>
-       )}
+      {gameState === 'running' && (
+        <CharacterContainer
+          animate={{
+            y: [0, -15, 0],
+            rotate: [0, 1, -1, 0],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <Character src="/players/Character.png" alt="Character" />
+        </CharacterContainer>
+      )}
 
-             {gameState === 'crashed' && (
-         <CharacterContainer
-           animate={{
-             y: [0, 300],
-             rotate: [0, 720],
-             scale: [1, 0.5]
-           }}
-           transition={{
-             duration: 2,
-             ease: "easeIn"
-           }}
-         >
-           <Character src="/players/Character.png" alt="Character" />
-         </CharacterContainer>
-       )}
+      {gameState === 'crashed' && (
+        <CharacterContainer
+          animate={{
+            y: [0, 300],
+            rotate: [0, 720],
+            scale: [1, 0.5]
+          }}
+          transition={{
+            duration: 2,
+            ease: "easeIn"
+          }}
+        >
+          <Character src="/players/Character.png" alt="Character" />
+        </CharacterContainer>
+      )}
     </GameContainer>
   );
 };
 
 export default GameDisplay;
+
