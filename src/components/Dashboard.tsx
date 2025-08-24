@@ -190,6 +190,20 @@ const Dashboard: React.FC = () => {
           <StatLabel>Support</StatLabel>
         </StatCard>
       </StatsSection>
+      <StatsSection>
+        <StatCard>
+          <StatNumber>2</StatNumber>
+          <StatLabel>Jeux Disponibles</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatNumber>100%</StatNumber>
+          <StatLabel>Fair Play</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatNumber>24/7</StatNumber>
+          <StatLabel>Support</StatLabel>
+        </StatCard>
+      </StatsSection>
     </DashboardContainer>
   );
 };

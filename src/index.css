@@ -20,13 +20,13 @@ code {
 }
 
 html, body {
-  height: 100%;
   width: 100%;
+  /* Supprimé height: 100% pour permettre le scroll */
 }
 
 #root {
-  height: 100%;
   width: 100%;
+  min-height: 100vh; /* Changé de height: 100% à min-height: 100vh */
 }
 
 /* Scrollbar personnalisée */
@@ -103,4 +103,3 @@ html, body {
     font-size: 12px;
   }
 }
-
