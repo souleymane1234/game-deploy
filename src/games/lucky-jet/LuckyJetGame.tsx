@@ -117,6 +117,10 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   const [gameTime, setGameTime] = useState<number>(0);
   const [crashPoint, setCrashPoint] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  
+  // Optimisation pour les mises à jour fréquentes du multiplicateur
+  const multiplierRef = useRef<number>(1.00);
+  multiplierRef.current = currentMultiplier;
   const [players, setPlayers] = useState<Player[]>([
     { id: 1, name: 'You', avatar: '👤', amount: 0, isPlaying: false, hasMultiplier: false },
     { id: 2, name: 'Alex', avatar: '🎮', amount: 500, isPlaying: true, hasMultiplier: false }
@@ -193,8 +197,11 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
             // Mise à jour du décompte seulement
             setCountdown(message.data);
           } else if (message.type === 'multiplier') {
-            // Mise à jour du multiplicateur seulement
-            setCurrentMultiplier(message.data);
+            // Mise à jour du multiplicateur seulement - optimisation pour éviter les re-renders inutiles
+            const newMultiplier = message.data;
+            if (Math.abs(newMultiplier - multiplierRef.current) > 0.001) {
+              setCurrentMultiplier(newMultiplier);
+            }
           }
         } catch (error) {
           console.error('Erreur parsing message WebSocket:', error);
@@ -321,43 +328,50 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
     }
   }, [gameState, isPlaying, gameMode, autoCashout, currentMultiplier]);
 
-  // Mise à jour des joueurs simulés
+  // Mise à jour des joueurs simulés - optimisée pour de meilleures performances
   useEffect(() => {
     if (gameState === 'running') {
       const playerUpdateInterval = setInterval(() => {
-        setPlayers(prev => prev.map(player => {
-          if (player.id === 1) return player; // Ne pas modifier le joueur principal
+        setPlayers(prev => {
+          let hasChanges = false;
+          const updatedPlayers = prev.map(player => {
+            if (player.id === 1) return player; // Ne pas modifier le joueur principal
+            
+            // Simulation de cashout aléatoire pour les autres joueurs
+            if (player.isPlaying && Math.random() < 0.015) { // 1.5% de chance par seconde
+              hasChanges = true;
+              const cashoutMultiplier = multiplierRef.current + Math.random() * 0.5;
+              return {
+                ...player,
+                isPlaying: false,
+                hasMultiplier: true,
+                multiplier: cashoutMultiplier,
+                cashoutMultiplier: cashoutMultiplier
+              };
+            }
+            
+            // Simulation de nouveaux joueurs qui rejoignent
+            if (!player.isPlaying && Math.random() < 0.008) { // 0.8% de chance par seconde
+              hasChanges = true;
+              const randomAmount = Math.floor(Math.random() * 2000) + 100; // 100-2100 FCFA
+              return {
+                ...player,
+                isPlaying: true,
+                hasMultiplier: false,
+                amount: randomAmount
+              };
+            }
+            
+            return player;
+          });
           
-          // Simulation de cashout aléatoire pour les autres joueurs
-          if (player.isPlaying && Math.random() < 0.02) { // 2% de chance par seconde
-            const cashoutMultiplier = currentMultiplier + Math.random() * 0.5;
-            return {
-              ...player,
-              isPlaying: false,
-              hasMultiplier: true,
-              multiplier: cashoutMultiplier,
-              cashoutMultiplier: cashoutMultiplier
-            };
-          }
-          
-          // Simulation de nouveaux joueurs qui rejoignent
-          if (!player.isPlaying && Math.random() < 0.01) { // 1% de chance par seconde
-            const randomAmount = Math.floor(Math.random() * 2000) + 100; // 100-2100 FCFA
-            return {
-              ...player,
-              isPlaying: true,
-              hasMultiplier: false,
-              amount: randomAmount
-            };
-          }
-          
-          return player;
-        }));
-      }, 1000);
+          return hasChanges ? updatedPlayers : prev;
+        });
+      }, 1500); // Mise à jour moins fréquente pour de meilleures performances
 
       return () => clearInterval(playerUpdateInterval);
     }
-  }, [gameState, currentMultiplier]);
+  }, [gameState]);
 
   // Fonction de cashout
   const handleCashout = useCallback(() => {

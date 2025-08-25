@@ -96,10 +96,11 @@ function startGame() {
 
   console.log('Game started!');
 
-  // Update multiplier every 100ms
+  // Update multiplier every 10ms (100 times per second) for ultra-smooth animation
   multiplierInterval = setInterval(() => {
     const elapsed = (Date.now() - startTime) / 1000;
-    gameState.currentMultiplier = Math.pow(Math.E, 0.0001 * elapsed * elapsed);
+    // Formula ultra-rapide pour une montée extrêmement agressive
+    gameState.currentMultiplier = Math.pow(Math.E, 0.05 * elapsed);
     gameState.currentMultiplier = Math.max(1.00, gameState.currentMultiplier);
 
     // Broadcast multiplier update
@@ -112,7 +113,7 @@ function startGame() {
     if (gameState.currentMultiplier >= gameState.crashPoint) {
       crashGame();
     }
-  }, 100);
+  }, 10);
 
   // Broadcast game started
   broadcast({

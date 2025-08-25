@@ -212,6 +212,7 @@ const MultiplierValue = styled.div<{ gameState: string }>`
     }
   }};
   margin-bottom: 12px;
+  transition: color 0.1s ease, text-shadow 0.1s ease;
   
   @media (max-width: 768px) {
     font-size: 48px;
@@ -358,9 +359,16 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
       </GraphContainer>
 
       <MultiplierDisplay gameState={gameState}>
-        <MultiplierValue gameState={gameState}>
-          {getMultiplierText()}
-        </MultiplierValue>
+        <motion.div
+          key={gameState === 'running' ? Math.floor(currentMultiplier * 100) : 'static'}
+          initial={{ scale: 1 }}
+          animate={gameState === 'running' ? { scale: [1, 1.02, 1] } : {}}
+          transition={{ duration: 0.5, repeat: gameState === 'running' ? Infinity : 0 }}
+        >
+          <MultiplierValue gameState={gameState}>
+            {getMultiplierText()}
+          </MultiplierValue>
+        </motion.div>
         <StatusText>{getStatusText()}</StatusText>
       </MultiplierDisplay>
 
