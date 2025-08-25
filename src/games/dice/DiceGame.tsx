@@ -52,6 +52,11 @@ const GameContainer = styled.div`
     background: linear-gradient(135deg, rgba(26, 26, 46, 0.7) 0%, rgba(22, 33, 62, 0.6) 50%, rgba(15, 20, 25, 0.8) 100%);
     pointer-events: none;
   }
+  
+  @media (max-width: 768px) {
+    height: 100vh;
+    min-height: 100vh;
+  }
 `;
 
 const GameArea = styled.div`
@@ -63,6 +68,17 @@ const GameArea = styled.div`
   padding: 40px;
   position: relative;
   z-index: 1;
+  
+  @media (max-width: 768px) {
+    padding: 20px 15px;
+    justify-content: flex-start;
+    padding-top: 80px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 15px 10px;
+    padding-top: 70px;
+  }
 `;
 
 const GameTitle = styled.h1`
@@ -76,6 +92,16 @@ const GameTitle = styled.h1`
   margin-bottom: 40px;
   animation: ${css`${bounce} 2s ease-in-out infinite`};
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  
+  @media (max-width: 768px) {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
 `;
 
 const DiceTable = styled(motion.div)`
@@ -100,6 +126,18 @@ const DiceTable = styled(motion.div)`
     border-radius: 20px;
     opacity: 0.3;
   }
+  
+  @media (max-width: 768px) {
+    padding: 25px 20px;
+    border-radius: 20px;
+    margin: 15px 0;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 20px 15px;
+    border-radius: 15px;
+    margin: 10px 0;
+  }
 `;
 
 const DiceContainer = styled(motion.div)`
@@ -108,6 +146,16 @@ const DiceContainer = styled(motion.div)`
   margin: 30px 0;
   justify-content: center;
   align-items: center;
+  
+  @media (max-width: 768px) {
+    gap: 15px;
+    margin: 20px 0;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 10px;
+    margin: 15px 0;
+  }
 `;
 
 const Dice = styled(motion.div)<{ isRolling: boolean; result: number }>`
@@ -153,6 +201,20 @@ const Dice = styled(motion.div)<{ isRolling: boolean; result: number }>`
     border-radius: 12px;
     pointer-events: none;
   }
+  
+  @media (max-width: 768px) {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    border-radius: 8px;
+  }
 `;
 
 const DiceNumber = styled.div<{ result: number }>`
@@ -165,6 +227,14 @@ const DiceNumber = styled.div<{ result: number }>`
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   font-weight: 900;
   font-size: 28px;
+  
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
 `;
 
 const BettingArea = styled.div`
@@ -178,6 +248,20 @@ const BettingArea = styled.div`
   border-radius: 20px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  @media (max-width: 768px) {
+    gap: 15px;
+    margin: 20px 0;
+    padding: 20px 15px;
+    border-radius: 15px;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 12px;
+    margin: 15px 0;
+    padding: 15px 10px;
+    border-radius: 12px;
+  }
 `;
 
 const BetOptions = styled.div`
@@ -185,6 +269,16 @@ const BetOptions = styled.div`
   grid-template-columns: repeat(6, 1fr);
   gap: 15px;
   margin: 20px 0;
+  
+  @media (max-width: 768px) {
+    gap: 10px;
+    margin: 15px 0;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 8px;
+    margin: 10px 0;
+  }
 `;
 
 const BetOption = styled.button<{ isSelected: boolean; isDisabled: boolean }>`
@@ -233,6 +327,20 @@ const BetOption = styled.button<{ isSelected: boolean; isDisabled: boolean }>`
   &:hover:not(:disabled)::before {
     left: 100%;
   }
+  
+  @media (max-width: 768px) {
+    width: 55px;
+    height: 55px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 45px;
+    height: 45px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
 `;
 
 const BetControls = styled.div`
@@ -241,6 +349,16 @@ const BetControls = styled.div`
   align-items: center;
   gap: 20px;
   margin: 20px 0;
+  
+  @media (max-width: 768px) {
+    gap: 15px;
+    margin: 15px 0;
+  }
+  
+  @media (max-width: 480px) {
+    gap: 12px;
+    margin: 10px 0;
+  }
 `;
 
 const BetInput = styled.input`
@@ -262,6 +380,18 @@ const BetInput = styled.input`
   
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 18px;
   }
 `;
 
@@ -288,6 +418,20 @@ const RollButton = styled(motion.button)<{ isDisabled: boolean }>`
     opacity: 0.5;
     background: #666;
   }
+  
+  @media (max-width: 768px) {
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 18px;
+    letter-spacing: 0.5px;
+  }
 `;
 
 const ResultsHistory = styled.div`
@@ -302,6 +446,24 @@ const ResultsHistory = styled.div`
   padding: 15px;
   border-radius: 15px;
   backdrop-filter: blur(10px);
+  
+  @media (max-width: 768px) {
+    top: 10px;
+    right: 10px;
+    max-width: 150px;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    top: 5px;
+    right: 5px;
+    max-width: 120px;
+    gap: 4px;
+    padding: 8px;
+    border-radius: 8px;
+  }
 `;
 
 const HistoryItem = styled.div<{ color: string }>`
@@ -317,6 +479,20 @@ const HistoryItem = styled.div<{ color: string }>`
   font-size: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  @media (max-width: 768px) {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+    border-radius: 6px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 24px;
+    height: 24px;
+    font-size: 9px;
+    border-radius: 5px;
+  }
 `;
 
 const WinMessage = styled(motion.div)<{ color: string }>`
@@ -333,6 +509,18 @@ const WinMessage = styled(motion.div)<{ color: string }>`
   z-index: 1000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   text-align: center;
+  
+  @media (max-width: 768px) {
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 10px;
+  }
 `;
 
 const StatsDisplay = styled.div`
@@ -344,6 +532,20 @@ const StatsDisplay = styled.div`
   border-radius: 15px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  @media (max-width: 768px) {
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    top: 5px;
+    left: 5px;
+    padding: 8px;
+    border-radius: 8px;
+  }
 `;
 
 const StatItem = styled.div`
@@ -354,6 +556,74 @@ const StatItem = styled.div`
   span {
     color: #00ff88;
     font-weight: bold;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 12px;
+    margin: 3px 0;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 11px;
+    margin: 2px 0;
+  }
+`;
+
+const BettingTitle = styled.h3`
+  color: #fff;
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  font-weight: 600;
+  
+  @media (max-width: 768px) {
+    font-size: 20px;
+    margin: 0 0 15px 0;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 18px;
+    margin: 0 0 12px 0;
+  }
+`;
+
+const BetNumber = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const BetMultiplier = styled.div`
+  font-size: 12px;
+  opacity: 0.8;
+  
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 9px;
+  }
+`;
+
+const DiceIcon = styled.span`
+  font-size: 20px;
+  margin-right: 8px;
+  
+  @media (max-width: 768px) {
+    font-size: 18px;
+    margin-right: 6px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 16px;
+    margin-right: 4px;
   }
 `;
 
@@ -446,7 +716,7 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
       </ResultsHistory>
 
       <GameArea>
-        <GameTitle>🎲 Dice Game</GameTitle>
+        <GameTitle>🎲 GuessNumber</GameTitle>
         
         <DiceTable>
           <DiceContainer
@@ -468,9 +738,9 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
         </DiceTable>
 
         <BettingArea>
-          <h3 style={{ color: '#fff', margin: '0 0 20px 0', fontSize: '24px' }}>
+          <BettingTitle>
             Pariez sur un nombre
-          </h3>
+          </BettingTitle>
           
           <BetOptions>
             {[1, 2, 3, 4, 5, 6].map((number) => (
@@ -480,8 +750,8 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
                 isDisabled={isRolling}
                 onClick={() => handleNumberSelect(number)}
               >
-                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{number}</div>
-                <div style={{ fontSize: '12px', opacity: 0.8 }}>x{getMultiplier(number)}</div>
+                <BetNumber>{number}</BetNumber>
+                <BetMultiplier>x{getMultiplier(number)}</BetMultiplier>
               </BetOption>
             ))}
           </BetOptions>
@@ -505,12 +775,12 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
             >
               {isRolling ? (
                 <>
-                  <span style={{ fontSize: '20px', marginRight: '8px' }}>🎲</span>
+                  <DiceIcon>🎲</DiceIcon>
                   Lancement...
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: '20px', marginRight: '8px' }}>🎲</span>
+                  <DiceIcon>🎲</DiceIcon>
                   Lancer le dé
                 </>
               )}

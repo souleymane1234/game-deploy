@@ -47,59 +47,7 @@ const GameContainer = styled.div`
   }
 `;
 
-const AudioControls = styled.div`
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 10px;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-`;
 
-const AudioButton = styled.button`
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #fff;
-  padding: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-`;
-
-const VolumeSlider = styled.input`
-  width: 80px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-  outline: none;
-  
-  &::-webkit-slider-thumb {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #00ff88;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  
-  &::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: #00ff88;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-  }
-`;
 
 const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   // États locaux
@@ -107,8 +55,6 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   const [betAmount, setBetAmount] = useState<number>(100);
   const [autoCashout, setAutoCashout] = useState<number>(2);
   const [profit, setProfit] = useState<number>(0);
-  const [volume, setVolume] = useState<number>(0.3);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
   
   // États synchronisés via WebSocket
   const [currentMultiplier, setCurrentMultiplier] = useState<number>(1.00);
@@ -138,7 +84,6 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
     { multiplier: 1.00, timestamp: Date.now() - 100000 }
   ]);
   
-  const audioRef = useRef<HTMLAudioElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
   // Connexion WebSocket
@@ -245,44 +190,7 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
     return 9.5 + Math.random() * 20.5; // 5% chance entre 9.5-30.0
   }, []);
 
-  // Audio management - joue en permanence
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
-      audioRef.current.loop = true;
-      
-      // Gérer l'autoplay avec interaction utilisateur
-      const playAudio = async () => {
-        try {
-          await audioRef.current!.play();
-        } catch (error) {
-          console.log('Audio autoplay blocked, will play on user interaction');
-        }
-      };
-      
-      playAudio();
-    }
-  }, [volume, isMuted]);
 
-  // Ajouter un gestionnaire pour démarrer l'audio au premier clic
-  useEffect(() => {
-    const handleUserInteraction = () => {
-      if (audioRef.current && audioRef.current.paused) {
-        audioRef.current.play().catch(console.error);
-      }
-      // Retirer l'écouteur après le premier clic
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-    };
-
-    document.addEventListener('click', handleUserInteraction);
-    document.addEventListener('touchstart', handleUserInteraction);
-
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-    };
-  }, []);
 
   // Fonction pour signaler un crash au serveur
   const signalCrash = useCallback(() => {
@@ -411,44 +319,10 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
     handleCashout();
   }, [handleCashout]);
 
-  // Gestion de l'audio
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    if (newVolume === 0) {
-      setIsMuted(true);
-    } else if (isMuted) {
-      setIsMuted(false);
-    }
-  };
 
   return (
     <GameContainer>
-      {/* Audio Element */}
-      <audio
-        ref={audioRef}
-        src="/musics/casino-164235.mp3"
-        preload="auto"
-      />
-
-      {/* Audio Controls */}
-      <AudioControls>
-        <AudioButton onClick={toggleMute}>
-          {isMuted ? '🔇' : '🔊'}
-        </AudioButton>
-        <VolumeSlider
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          value={volume}
-          onChange={handleVolumeChange}
-        />
-      </AudioControls>
 
       <GameDisplay
         currentMultiplier={currentMultiplier}

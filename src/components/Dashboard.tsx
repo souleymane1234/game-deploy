@@ -142,9 +142,9 @@ const Dashboard: React.FC = () => {
     },
     {
       id: 'dice',
-      title: 'Dice Game',
+      title: 'GuessNumber',
       icon: '🎲',
-      description: 'Lancez les dés et devinez le résultat. Un classique revisité avec des graphismes modernes.',
+      description: 'Devinez le nombre et gagnez des gains multipliés ! Un jeu de hasard avec des multiplicateurs attractifs.',
       path: '/dice'
     },
 
