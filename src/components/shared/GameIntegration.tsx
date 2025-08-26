@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { GamePlugin, IframeConfig, IntegrationConfig } from '../../types/GamePlugin';
+import BalanceService from '../../services/BalanceService';
 
 interface GameIntegrationProps {
   plugin: GamePlugin;
@@ -22,35 +23,7 @@ const StyledIframe = styled.iframe`
   background: transparent;
 `;
 
-const ConnectionStatus = styled.div<{ isConnected: boolean }>`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: ${props => props.isConnected ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)'};
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 
-  &::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: white;
-    animation: ${props => props.isConnected ? 'pulse' : 'none'} 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-`;
 
 const LoadingOverlay = styled.div`
   position: absolute;
@@ -104,57 +77,26 @@ const RetryButton = styled.button`
 `;
 
 const GameIntegration: React.FC<GameIntegrationProps> = ({ plugin, balance, setBalance }) => {
-  const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const storageKey = '4win_platform_balance';
+  const balanceService = BalanceService.getInstance();
 
-  // Sauvegarde la balance dans localStorage
-  const saveBalanceToStorage = (newBalance: number) => {
-    try {
-      const data = {
-        balance: newBalance,
-        timestamp: Date.now(),
-        platform: '4win'
-      };
-      localStorage.setItem(storageKey, JSON.stringify(data));
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde du solde:', error);
-    }
-  };
 
-  // Charge la balance depuis localStorage
-  const loadBalanceFromStorage = (): number | null => {
-    try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) {
-        const data = JSON.parse(stored);
-        return typeof data.balance === 'number' ? data.balance : null;
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement du solde:', error);
-    }
-    return null;
-  };
 
-  useEffect(() => {
-    // Sauvegarde la balance actuelle dans localStorage
-    saveBalanceToStorage(balance);
-
+    useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const { type, data } = event.data;
 
       switch (type) {
         case 'GAME_READY':
-          setIsConnected(true);
           setIsLoading(false);
           // Envoie le solde actuel au jeu
           if (iframeRef.current?.contentWindow) {
             iframeRef.current.contentWindow.postMessage({
               type: 'BALANCE_UPDATE',
-              balance: balance
+              data: { balance: balanceService.getBalance() }
             }, '*');
           }
           break;
@@ -164,28 +106,18 @@ const GameIntegration: React.FC<GameIntegrationProps> = ({ plugin, balance, setB
           if (iframeRef.current?.contentWindow) {
             iframeRef.current.contentWindow.postMessage({
               type: 'BALANCE_UPDATE',
-              balance: balance
+              data: { balance: balanceService.getBalance() }
             }, '*');
           }
           break;
 
         case 'PLACE_BET':
-          if (data.amount <= balance) {
-            // Mise acceptée
-            if (iframeRef.current?.contentWindow) {
-              iframeRef.current.contentWindow.postMessage({
-                type: 'BET_PLACED',
-                amount: data.amount
-              }, '*');
-            }
-          } else {
-            // Solde insuffisant
-            if (iframeRef.current?.contentWindow) {
-              iframeRef.current.contentWindow.postMessage({
-                type: 'BET_REJECTED',
-                reason: 'insufficient_balance'
-              }, '*');
-            }
+          const betResult = balanceService.handleGameMessage('PLACE_BET', data);
+          if (iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage({
+              type: betResult.type,
+              data: betResult.data
+            }, '*');
           }
           break;
 
@@ -198,20 +130,16 @@ const GameIntegration: React.FC<GameIntegrationProps> = ({ plugin, balance, setB
           break;
 
         case 'GAME_WON':
-          if (data.winAmount) {
-            const newBalance = balance + data.winAmount;
-            setBalance(newBalance);
-            saveBalanceToStorage(newBalance);
-            console.log('Gain:', data.winAmount, 'Nouveau solde:', newBalance);
+          const winResult = balanceService.handleGameMessage('GAME_WON', data);
+          if (winResult) {
+            console.log('Gain traité:', winResult);
           }
           break;
 
         case 'GAME_LOST':
-          if (data.loseAmount) {
-            const newBalance = balance - data.loseAmount;
-            setBalance(newBalance);
-            saveBalanceToStorage(newBalance);
-            console.log('Perte:', data.loseAmount, 'Nouveau solde:', newBalance);
+          const lossResult = balanceService.handleGameMessage('GAME_LOST', data);
+          if (lossResult) {
+            console.log('Perte traitée:', lossResult);
           }
           break;
 
@@ -238,37 +166,11 @@ const GameIntegration: React.FC<GameIntegrationProps> = ({ plugin, balance, setB
     };
 
     window.addEventListener('message', handleMessage);
-    
-    // Écoute les changements de localStorage pour synchroniser
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === storageKey && event.newValue) {
-        try {
-          const data = JSON.parse(event.newValue);
-          if (data.balance !== balance) {
-            setBalance(data.balance);
-          }
-        } catch (error) {
-          console.error('Erreur lors de la synchronisation du solde:', error);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Synchronise périodiquement avec localStorage
-    const syncInterval = setInterval(() => {
-      const storedBalance = loadBalanceFromStorage();
-      if (storedBalance !== null && storedBalance !== balance) {
-        setBalance(storedBalance);
-      }
-    }, 2000);
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(syncInterval);
     };
-  }, [balance, setBalance, storageKey]);
+  }, [balanceService]);
 
   const handleRetry = () => {
     setHasError(false);
@@ -296,9 +198,7 @@ const GameIntegration: React.FC<GameIntegrationProps> = ({ plugin, balance, setB
         }}
       />
       
-      <ConnectionStatus isConnected={isConnected}>
-        {isConnected ? 'Connecté' : 'Déconnecté'}
-      </ConnectionStatus>
+
 
       {isLoading && (
         <LoadingOverlay>

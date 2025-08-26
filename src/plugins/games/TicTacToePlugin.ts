@@ -15,11 +15,11 @@ const TicTacToePlugin: GamePlugin = {
     title: 'Tic Tac Toe'
   },
   config: {
-    minBet: 1,
-    maxBet: 100,
-    defaultBet: 5,
-    betIncrements: [1, 2, 5, 10, 25, 50],
-    currency: 'EUR',
+    minBet: 100,
+    maxBet: 100000,
+    defaultBet: 1000,
+    betIncrements: [100, 500, 1000, 2500, 5000, 10000],
+    currency: 'FCFA',
     features: [
       {
         id: 'bot-ai',

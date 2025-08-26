@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ControlPanel from './ControlPanel';
 import GameDisplay from './GameDisplay';
 import { motion } from 'framer-motion';
+import BalanceService from '../../services/BalanceService';
 
 interface Player {
   id: number;
@@ -55,6 +56,23 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   const [betAmount, setBetAmount] = useState<number>(100);
   const [autoCashout, setAutoCashout] = useState<number>(2);
   const [profit, setProfit] = useState<number>(0);
+  const balanceService = BalanceService.getInstance();
+
+  // Synchroniser le solde avec le BalanceService
+  useEffect(() => {
+    const handleBalanceUpdate = (newBalance: number) => {
+      setBalance(newBalance);
+    };
+
+    balanceService.on('balanceUpdate', handleBalanceUpdate);
+    
+    // Initialiser avec le solde actuel du service
+    setBalance(balanceService.getBalance());
+
+    return () => {
+      balanceService.off('balanceUpdate', handleBalanceUpdate);
+    };
+  }, [balanceService, setBalance]);
   
   // États synchronisés via WebSocket
   const [currentMultiplier, setCurrentMultiplier] = useState<number>(1.00);
@@ -285,7 +303,7 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   const handleCashout = useCallback(() => {
     if (gameState === 'running' && isPlaying) {
       const winnings = betAmount * currentMultiplier;
-      setBalance(balance + winnings);
+      balanceService.addWinnings(winnings);
       setProfit(winnings);
       setIsPlaying(false);
       
@@ -296,12 +314,12 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
           : player
       ));
     }
-  }, [gameState, isPlaying, betAmount, currentMultiplier, setBalance, balance]);
+  }, [gameState, isPlaying, betAmount, currentMultiplier, balanceService]);
 
   // Fonction pour rejoindre le jeu
   const handleJoinGame = useCallback(() => {
-    if (gameState === 'waiting' && balance >= betAmount) {
-      setBalance(balance - betAmount);
+    if (gameState === 'waiting' && balanceService.canAfford(betAmount)) {
+      balanceService.placeBet(betAmount);
       setIsPlaying(true);
       setProfit(0);
       
@@ -312,7 +330,7 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
           : player
       ));
     }
-  }, [gameState, balance, betAmount, setBalance]);
+  }, [gameState, betAmount, balanceService]);
 
   // Fonction de cashout manuel
   const handleManualCashout = useCallback(() => {

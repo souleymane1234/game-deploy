@@ -8,7 +8,7 @@ export const StonePaperScissorsPlugin: GamePlugin = {
   route: '/stone-paper-scissors',
   type: 'iframe',
   iframeConfig: {
-    src: 'http://localhost:3000',
+    src: 'http://localhost:3001',
     width: '100%',
     height: '100%',
     allowFullscreen: true,
@@ -16,11 +16,11 @@ export const StonePaperScissorsPlugin: GamePlugin = {
     title: 'Pierre-Papier-Ciseaux'
   },
   config: {
-    minBet: 1,
-    maxBet: 1000,
-    defaultBet: 10,
-    betIncrements: [1, 5, 10, 25, 50, 100],
-    currency: 'EUR',
+    minBet: 100,
+    maxBet: 100000,
+    defaultBet: 1000,
+    betIncrements: [100, 500, 1000, 2500, 5000, 10000],
+    currency: 'FCFA',
     features: [
       {
         id: 'sound',

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes, css, createGlobalStyle } from 'styled-components';
 import { GameConfig } from '../../types/GamePlugin';
+import BalanceService from '../../services/BalanceService';
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
@@ -644,6 +645,23 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
   const [totalBet, setTotalBet] = useState<number>(0);
   const [betAmount, setBetAmount] = useState<BetAmount>({ amount: 5, isSet: false });
   const [showBetInput, setShowBetInput] = useState<boolean>(true);
+  const balanceService = BalanceService.getInstance();
+
+  // Synchroniser le solde avec le BalanceService
+  useEffect(() => {
+    const handleBalanceUpdate = (newBalance: number) => {
+      setBalance(newBalance);
+    };
+
+    balanceService.on('balanceUpdate', handleBalanceUpdate);
+    
+    // Initialiser avec le solde actuel du service
+    setBalance(balanceService.getBalance());
+
+    return () => {
+      balanceService.off('balanceUpdate', handleBalanceUpdate);
+    };
+  }, [balanceService, setBalance]);
 
   // Timer effect
   useEffect(() => {
@@ -677,7 +695,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
           
                     if (winningFace) {
              const winAmount = winningFace.bet * 5; // 5x payout
-             setBalance(balance + winAmount);
+             balanceService.addWinnings(winAmount);
            }
           
           // Show result popup after 2 seconds delay so player can see the final dice
@@ -686,7 +704,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
           }, 2000);
         }, 3000);
     }
-  }, [timeLeft, isGameActive, selectedFaces, balance, setBalance]);
+  }, [timeLeft, isGameActive, selectedFaces, balanceService]);
 
   // Start new game
   const startNewGame = useCallback(() => {
@@ -703,13 +721,13 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
 
   // Set bet amount and start game
   const setBetAndStart = useCallback(() => {
-    if (betAmount.amount > 0 && betAmount.amount <= balance) {
+    if (betAmount.amount > 0 && balanceService.canAfford(betAmount.amount)) {
       setBetAmount(prev => ({ ...prev, isSet: true }));
       setShowBetInput(false);
       setTimeLeft(10);
       setIsGameActive(true);
     }
-  }, [betAmount.amount, balance]);
+  }, [betAmount.amount, balanceService]);
 
   // Select dice face
   const selectFace = useCallback((face: number) => {
@@ -724,19 +742,19 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
       const newFaces = selectedFaces.filter((_, index) => index !== existingIndex);
       setSelectedFaces(newFaces);
       setTotalBet(prev => prev - selectedFaces[existingIndex].bet);
-      setBalance(balance + selectedFaces[existingIndex].bet);
+      balanceService.addWinnings(selectedFaces[existingIndex].bet);
     } else {
       // Add face (max 2)
       if (selectedFaces.length < 2) {
-        if (balance >= betAmount.amount) {
+        if (balanceService.canAfford(betAmount.amount)) {
           const newSelection: DiceSelection = { face, bet: betAmount.amount };
           setSelectedFaces(prev => [...prev, newSelection]);
           setTotalBet(prev => prev + betAmount.amount);
-          setBalance(balance - betAmount.amount);
+          balanceService.placeBet(betAmount.amount);
         }
       }
     }
-  }, [isGameActive, selectedFaces, balance, setBalance, betAmount.amount]);
+  }, [isGameActive, selectedFaces, balanceService, betAmount.amount]);
 
   const progress = timeLeft / 10;
 
@@ -753,7 +771,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
     setBetAmount({ amount, isSet: false });
   };
 
-  const isBetValid = betAmount.amount > 0 && betAmount.amount <= balance;
+  const isBetValid = betAmount.amount > 0 && balanceService.canAfford(betAmount.amount);
 
   const renderDiceFace = (face: number) => {
     return (

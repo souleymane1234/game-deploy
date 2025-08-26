@@ -27,10 +27,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently \"npm start\" \"cd TicTacToe && npm run node-start\"",
+    "dev": "concurrently \"npm start\" \"cd ../Stone-paper-scissors && npm start\" \"cd ../TicTacToe && npm run node-start\"",
     "dev:platform": "npm start",
-    "dev:tic-tac-toe": "cd TicTacToe && npm run node-start",
-    "install:all": "npm install && cd TicTacToe && npm install"
+    "dev:stone-paper-scissors": "cd ../Stone-paper-scissors && npm start",
+    "dev:tic-tac-toe": "cd ../TicTacToe && npm run node-start",
+    "install:all": "npm install && cd ../Stone-paper-scissors && npm install && cd ../TicTacToe && npm install"
   },
   "eslintConfig": {
     "extends": [

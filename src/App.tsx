@@ -6,10 +6,13 @@ import LuckyJetPlugin from './plugins/games/LuckyJetPlugin';
 import DicePlugin from './plugins/games/DicePlugin';
 import TicTacToePlugin from './plugins/games/TicTacToePlugin';
 import TimerDicePlugin from './plugins/games/TimerDicePlugin';
+import { StonePaperScissorsPlugin } from './plugins/games/StonePaperScissorsPlugin';
 import GameIntegration from './components/shared/GameIntegration';
+import BalanceService from './services/BalanceService';
 
 import Dashboard from './components/Dashboard';
 import Home from './components/Home';
+import BalanceTest from './components/BalanceTest';
 import './App.css';
 
 const AppContainer = styled.div`
@@ -77,22 +80,27 @@ const PluginRoutes: React.FC<{ balance: number; setBalance: (balance: number) =>
 const AppContent: React.FC = () => {
   const [balance, setBalance] = useState<number>(10000);
   const { registerPlugin } = usePluginManager();
+  const balanceService = BalanceService.getInstance();
 
-  // Initialiser localStorage avec la balance au démarrage
+  // Initialiser le solde depuis le service centralisé
   useEffect(() => {
-    const storageKey = '4win_platform_balance';
-    const initialBalanceData = {
-      balance: 10000,
-      timestamp: Date.now(),
-      platform: '4win'
-    };
-    localStorage.setItem(storageKey, JSON.stringify(initialBalanceData));
-    console.log('Plateforme - Balance initialisée dans localStorage:', initialBalanceData);
+    setBalance(balanceService.getBalance());
     
+    // Écouter les mises à jour du solde
+    const handleBalanceUpdate = (newBalance: number) => {
+      setBalance(newBalance);
+    };
+
+    balanceService.on('balanceUpdate', handleBalanceUpdate);
+
     // Vider les plugins sauvegardés pour éviter les conflits
     localStorage.removeItem('gamePlugins');
-    console.log('Plateforme - localStorage des plugins vidé');
-  }, []);
+    console.log('Plateforme - Balance centralisée initialisée');
+    
+    return () => {
+      balanceService.off('balanceUpdate', handleBalanceUpdate);
+    };
+  }, [balanceService]);
 
   // Enregistrer les plugins au démarrage (une seule fois)
   useEffect(() => {
@@ -108,6 +116,7 @@ const AppContent: React.FC = () => {
     registerPlugin(diceWithEnabled);
     registerPlugin(ticTacToeWithEnabled);
     registerPlugin(timerDiceWithEnabled);
+    registerPlugin(StonePaperScissorsPlugin);
     
     console.log('Plugins enregistrés avec isEnabled: true');
   }, [registerPlugin]);
@@ -118,6 +127,7 @@ const AppContent: React.FC = () => {
         <MainContent>
           <PluginRoutes balance={balance} setBalance={setBalance} />
         </MainContent>
+        <BalanceTest />
       </AppContainer>
     </Router>
   );

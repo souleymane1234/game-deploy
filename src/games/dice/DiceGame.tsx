@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { motion } from 'framer-motion';
+import BalanceService from '../../services/BalanceService';
 
 interface DiceGameProps {
   balance: number;
@@ -637,6 +638,23 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
   const [winAmount, setWinAmount] = useState<number>(0);
   const [totalWins, setTotalWins] = useState<number>(0);
   const [totalGames, setTotalGames] = useState<number>(0);
+  const balanceService = BalanceService.getInstance();
+
+  // Synchroniser le solde avec le BalanceService
+  useEffect(() => {
+    const handleBalanceUpdate = (newBalance: number) => {
+      setBalance(newBalance);
+    };
+
+    balanceService.on('balanceUpdate', handleBalanceUpdate);
+    
+    // Initialiser avec le solde actuel du service
+    setBalance(balanceService.getBalance());
+
+    return () => {
+      balanceService.off('balanceUpdate', handleBalanceUpdate);
+    };
+  }, [balanceService, setBalance]);
 
   // Multiplicateurs selon la difficulté (probabilité 1/6 pour chaque nombre)
   const getMultiplier = (number: number) => {
@@ -653,10 +671,10 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
   };
 
   const handleRoll = useCallback(() => {
-    if (selectedNumber === null || betAmount > balance || isRolling) return;
+    if (selectedNumber === null || !balanceService.canAfford(betAmount) || isRolling) return;
 
     setIsRolling(true);
-    setBalance(balance - betAmount);
+    balanceService.placeBet(betAmount);
     setTotalGames(prev => prev + 1);
 
     // Simuler le lancer de dé
@@ -669,7 +687,7 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
       if (isWin) {
         const multiplier = getMultiplier(selectedNumber);
         const winnings = betAmount * multiplier;
-        setBalance(balance + winnings);
+        balanceService.addWinnings(winnings);
         setWinAmount(winnings);
         setTotalWins(prev => prev + 1);
         setShowWinMessage(true);
@@ -687,7 +705,7 @@ const DiceGame: React.FC<DiceGameProps> = ({ balance, setBalance }) => {
 
       setIsRolling(false);
     }, 800);
-  }, [selectedNumber, betAmount, balance, setBalance, isRolling]);
+  }, [selectedNumber, betAmount, balanceService, isRolling]);
 
   const handleNumberSelect = (number: number) => {
     setSelectedNumber(number);
