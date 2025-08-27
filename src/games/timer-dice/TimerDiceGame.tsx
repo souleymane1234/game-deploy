@@ -808,9 +808,9 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
         <MainContent>
           {showBetInput ? (
             <BetInputContainer>
-              <BetInputTitle>Set Your Bet Amount</BetInputTitle>
+              <BetInputTitle>Définissez le montant de votre mise</BetInputTitle>
               <BetInputField>
-                <BetInputLabel>Bet Amount (FCFA)</BetInputLabel>
+                <BetInputLabel>Montant du pari (FCFA)</BetInputLabel>
                 <BetInput
                   type="number"
                   min="0"
@@ -818,7 +818,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                   step="0.01"
                   value={betAmount.amount}
                   onChange={(e) => handleBetAmountChange(e.target.value)}
-                  placeholder="Enter bet amount"
+                  placeholder="Entrez le montant de la mise"
                 />
               </BetInputField>
               
@@ -844,12 +844,12 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                 disabled={!isBetValid}
                 onClick={setBetAndStart}
               >
-                Start Game
+                Démarrer le jeu
               </StartGameButton>
             </BetInputContainer>
           ) : (
             <>
-              <GamePrompt>Select up to 2 dice faces</GamePrompt>
+              <GamePrompt>Sélectionnez jusqu'à 2 faces de dés</GamePrompt>
               
               {isGameActive && (
                 <TimerCircle progress={progress}>
@@ -905,13 +905,13 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                    isRolling ? 'Rolling dice...' : 
                    finalResult ? 'Game ended' : 'Ready to start'}
                 </h3>
-                <p>Total bet: FCFA {totalBet.toFixed(2)} | Selected: {selectedFaces.length}/2 faces</p>
+                <p>Total pari: FCFA {totalBet.toFixed(2)} | Sélectionné: {selectedFaces.length}/2 faces</p>
               </GameStatus>
 
               {selectedFaces.length > 0 && (
                 <SelectionDisplay>
                   <h4 style={{ color: '#8a2be2', margin: 0, fontSize: '1.2rem', fontWeight: 'bold', textShadow: '0 0 8px rgba(138, 43, 226, 0.5)' }}>
-                    Selected Faces ({selectedFaces.length}/2):
+                  Sélectionné Faces ({selectedFaces.length}/2):
                   </h4>
                   <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                     {selectedFaces.map((selection, index) => (
@@ -957,7 +957,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
         {showResult && (
           <ResultOverlay>
             <ResultContent>
-              <h2>Game Result!</h2>
+              <h2>Résultat du jeu!</h2>
               {selectedFaces.some(
                 selection => selection.face === finalResult
               ) ? (
