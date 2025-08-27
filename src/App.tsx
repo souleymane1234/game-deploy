@@ -127,7 +127,7 @@ const AppContent: React.FC = () => {
         <MainContent>
           <PluginRoutes balance={balance} setBalance={setBalance} />
         </MainContent>
-        <BalanceTest />
+        {/* <BalanceTest /> */}
       </AppContainer>
     </Router>
   );
