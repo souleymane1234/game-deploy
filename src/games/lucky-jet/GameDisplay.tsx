@@ -125,72 +125,26 @@ const ResultItem = styled.div<{ multiplier: number }>`
   }
 `;
 
-const GraphContainer = styled.div`
-  position: absolute;
-  top: 140px;
-  left: 80px;
-  right: 80px;
-  bottom: 100px;
-  background: rgba(22, 33, 62, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  z-index: 5;
-  
-  @media (max-width: 768px) {
-    top: 100px;
-    left: 20px;
-    right: 20px;
-    bottom: 120px;
-    min-height: 300px;
-  }
-  
-  @media (max-width: 480px) {
-    top: 80px;
-    left: 15px;
-    right: 15px;
-    bottom: 140px;
-    min-height: 250px;
-  }
-`;
 
-const GraphGrid = styled.svg`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const GridLine = styled.line`
-  stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 1;
-`;
-
-const GridText = styled.text`
-  fill: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-`;
 
 const MultiplierDisplay = styled.div<{ gameState: string }>`
   position: absolute;
   left: 50%;
-  top: 55%;
-  transform: translate(-50%, -50%);
+  bottom: 20%;
+  transform: translateX(-50%);
   text-align: center;
   z-index: 10;
   
   @media (max-width: 768px) {
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 15%;
+    transform: translateX(-50%);
   }
   
   @media (max-width: 480px) {
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 10%;
+    transform: translateX(-50%);
   }
 `;
 
@@ -232,7 +186,7 @@ const StatusText = styled.div`
 const CashoutButton = styled(motion.button)`
   position: absolute;
   left: 50%;
-  top: 60%;
+  bottom: 10%;
   transform: translateX(-50%);
   padding: 12px 24px;
   background: linear-gradient(135deg, #ff6b6b, #ff4444);
@@ -245,7 +199,7 @@ const CashoutButton = styled(motion.button)`
   z-index: 10;
   
   @media (max-width: 768px) {
-    top: 65%;
+    bottom: 8%;
     padding: 10px 20px;
     font-size: 14px;
   }
@@ -253,36 +207,36 @@ const CashoutButton = styled(motion.button)`
 
 const CharacterContainer = styled(motion.div)`
   position: absolute;
-  left: 50%;
+  left: 45%;
   top: 40%;
   transform: translate(-50%, -50%);
   z-index: 8;
   
   @media (max-width: 768px) {
-    left: 50%;
-    top: 35%;
+    left: 45%;
+    top: 40%;
   }
   
   @media (max-width: 480px) {
-    left: 50%;
-    top: 35%;
+    left: 40%;
+    top: 40%;
   }
 `;
 
 const Character = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.5));
+  filter: drop-shadow(0 0 15px rgba(255, 165, 0, 0.6));
   
   @media (max-width: 768px) {
-    width: 70px;
-    height: 70px;
+    width: 150px;
+    height: 150px;
   }
   
   @media (max-width: 480px) {
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: 120px;
   }
 `;
 
@@ -335,28 +289,7 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
         ))}
       </PreviousResults>
 
-      <GraphContainer>
-        <GraphGrid>
-          {/* Horizontal grid lines */}
-          <GridLine x1="0" y1="0" x2="100%" y2="0" />
-          <GridLine x1="0" y1="16.67%" x2="100%" y2="16.67%" />
-          <GridLine x1="0" y1="33.33%" x2="100%" y2="33.33%" />
-          <GridLine x1="0" y1="50%" x2="100%" y2="50%" />
-          <GridLine x1="0" y1="66.67%" x2="100%" y2="66.67%" />
-          <GridLine x1="0" y1="83.33%" x2="100%" y2="83.33%" />
-          <GridLine x1="0" y1="100%" x2="100%" y2="100%" />
-          
-          {/* Vertical grid lines */}
-          <GridLine x1="0" y1="0" x2="0" y2="100%" />
-          <GridLine x1="14.28%" y1="0" x2="14.28%" y2="100%" />
-          <GridLine x1="28.57%" y1="0" x2="28.57%" y2="100%" />
-          <GridLine x1="42.86%" y1="0" x2="42.86%" y2="100%" />
-          <GridLine x1="57.14%" y1="0" x2="57.14%" y2="100%" />
-          <GridLine x1="71.43%" y1="0" x2="71.43%" y2="100%" />
-          <GridLine x1="85.71%" y1="0" x2="85.71%" y2="100%" />
-          <GridLine x1="100%" y1="0" x2="100%" y2="100%" />
-        </GraphGrid>
-      </GraphContainer>
+
 
       <MultiplierDisplay gameState={gameState}>
         <motion.div
@@ -382,38 +315,53 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
         </CashoutButton>
       )}
 
-      {gameState === 'running' && (
-        <CharacterContainer
-          animate={{
-            y: [0, -15, 0],
-            rotate: [0, 1, -1, 0],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <Character src="/players/Character.png" alt="Character" />
-        </CharacterContainer>
-      )}
+             {gameState === 'running' && (
+         <CharacterContainer
+           animate={{
+             y: [0, -15, 0],
+             rotate: [0, 1, -1, 0],
+             scale: [1, 1.05, 1]
+           }}
+           transition={{
+             duration: 3,
+             repeat: Infinity,
+             ease: "easeInOut"
+           }}
+         >
+           <Character src="/players/NewCharacter.png" alt="Character" />
+         </CharacterContainer>
+       )}
 
-      {gameState === 'crashed' && (
-        <CharacterContainer
-          animate={{
-            y: [0, 300],
-            rotate: [0, 720],
-            scale: [1, 0.5]
-          }}
-          transition={{
-            duration: 2,
-            ease: "easeIn"
-          }}
-        >
-          <Character src="/players/Character.png" alt="Character" />
-        </CharacterContainer>
-      )}
+       {gameState === 'waiting' && (
+         <CharacterContainer
+           animate={{
+             scale: [1, 1.1, 1]
+           }}
+           transition={{
+             duration: 2,
+             repeat: Infinity,
+             ease: "easeInOut"
+           }}
+         >
+           <Character src="/players/NewCharacter.png" alt="Character" />
+         </CharacterContainer>
+       )}
+
+             {gameState === 'crashed' && (
+         <CharacterContainer
+           animate={{
+             y: [0, 300],
+             rotate: [0, 720],
+             scale: [1, 0.5]
+           }}
+           transition={{
+             duration: 2,
+             ease: "easeIn"
+           }}
+         >
+           <Character src="/players/NewCharacter.png" alt="Character" />
+         </CharacterContainer>
+       )}
     </GameContainer>
   );
 };

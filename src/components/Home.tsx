@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { usePluginManager } from '../plugins/PluginManager';
 
 // Styled Components
 const Container = styled.div`
@@ -617,10 +618,10 @@ const Home = () => {
     },
     {
       id: 'dice',
-      title: 'Dice Game',
+      title: 'GuessNumber',
       icon: '🎲',
       gradient: 'linear-gradient(135deg, #4ade80, #22c55e)',
-      description: 'Regardez le multiplicateur monter et encaissez avant le crash !',
+      description: 'Devinez le nombre et gagnez des gains multipliés !',
       provider: '1win Games',
       path: '/dice'
     },
@@ -648,6 +649,9 @@ const Home = () => {
     { id: 'live-games', title: 'Live-Games', subtitle: 'Revendeurs vivants', icon: '🎮', color: 'bg-blue-500' },
     { id: 'poker', title: 'Poker', subtitle: 'Tournois gratuits', icon: '🂡', color: 'bg-green-500' }
   ];
+
+  const { getEnabledPlugins } = usePluginManager();
+  const enabledGames = getEnabledPlugins();
 
   return (
     <Container>
@@ -747,19 +751,19 @@ const Home = () => {
           </GamesSectionHeader>
 
           <GamesGrid>
-            {games.map((game) => (
+            {enabledGames.map((game) => (
               <GameCard key={game.id}>
-                <GameCardContent gradient={game.gradient}>
+                <GameCardContent gradient={`linear-gradient(135deg, ${game.config.theme?.primaryColor || '#00ff88'}, ${game.config.theme?.accentColor || '#ff6b6b'})`}>
                   <GameIcon>{game.icon}</GameIcon>
                   <GameInfo>
                     <GameProvider>
-                      <ProviderLogo>1W</ProviderLogo>
-                      <ProviderText>{game.provider}</ProviderText>
+                      <ProviderLogo>4W</ProviderLogo>
+                      <ProviderText>4win Platform</ProviderText>
                     </GameProvider>
-                    <GameTitle>{game.title}</GameTitle>
+                    <GameTitle>{game.name}</GameTitle>
                   </GameInfo>
                   <GameHoverOverlay>
-                    <GamePlayButton onClick={() => window.location.href = game.path}>
+                    <GamePlayButton onClick={() => window.location.href = game.route}>
                       Jouer
                     </GamePlayButton>
                   </GameHoverOverlay>
