@@ -8,7 +8,7 @@ export const StonePaperScissorsPlugin: GamePlugin = {
   route: '/stone-paper-scissors',
   type: 'iframe',
   iframeConfig: {
-    src: 'https://papercisor.vercel.app/',
+    src: 'https://new-paper-cisor.vercel.app',
     width: '100%',
     height: '100%',
     allowFullscreen: true,
