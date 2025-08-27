@@ -758,7 +758,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
 
   const progress = timeLeft / 10;
 
-  const quickBetAmounts = [1, 5, 10, 25, 50, 100];
+  const quickBetAmounts = [100, 500, 1000, 5000, 10000, 100000];
 
   const handleBetAmountChange = (value: string) => {
     const numValue = parseFloat(value);
@@ -801,7 +801,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
         <Header>
           <WalletContainer>
             <WalletIcon>💰</WalletIcon>
-            <BalanceDisplay>€{balance.toFixed(2)}</BalanceDisplay>
+            <BalanceDisplay>FCFA {balance.toFixed(2)}</BalanceDisplay>
           </WalletContainer>
         </Header>
 
@@ -810,7 +810,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
             <BetInputContainer>
               <BetInputTitle>Set Your Bet Amount</BetInputTitle>
               <BetInputField>
-                <BetInputLabel>Bet Amount (€)</BetInputLabel>
+                <BetInputLabel>Bet Amount (FCFA)</BetInputLabel>
                 <BetInput
                   type="number"
                   min="0"
@@ -829,7 +829,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                     isSelected={betAmount.amount === amount}
                     onClick={() => setQuickBet(amount)}
                   >
-                    €{amount}
+                    FCFA {amount}
                   </BetQuickButton>
                 ))}
               </BetQuickButtons>
@@ -905,7 +905,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                    isRolling ? 'Rolling dice...' : 
                    finalResult ? 'Game ended' : 'Ready to start'}
                 </h3>
-                <p>Total bet: €{totalBet.toFixed(2)} | Selected: {selectedFaces.length}/2 faces</p>
+                <p>Total bet: FCFA {totalBet.toFixed(2)} | Selected: {selectedFaces.length}/2 faces</p>
               </GameStatus>
 
               {selectedFaces.length > 0 && (
@@ -918,7 +918,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                       <SelectedFace key={index} isSelected={true}>
                         {renderDiceFace(selection.face)}
                         <span style={{ color: '#ffd700', fontWeight: 'bold', fontSize: '1.1rem' }}>
-                          €{selection.bet}
+                          FCFA {selection.bet}
                         </span>
                       </SelectedFace>
                     ))}
@@ -945,7 +945,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
                   >
                     {renderDiceFace(face)}
                     <BetAmount>
-                      {isSelected ? `€${betAmount.amount}` : 'Select'}
+                      {isSelected ? `FCFA ${betAmount.amount}` : 'Select'}
                     </BetAmount>
                   </DiceBet>
                 );
@@ -963,7 +963,7 @@ const TimerDiceGame: React.FC<TimerDiceGameProps> = ({ balance, setBalance, game
               ) ? (
                 <WinResult>
                   <p>🎉 You won!</p>
-                  <p>Gain: €{((selectedFaces.find(s => s.face === finalResult)?.bet || 0) * 5).toFixed(2)}</p>
+                  <p>Gain: FCFA {((selectedFaces.find(s => s.face === finalResult)?.bet || 0) * 5).toFixed(2)}</p>
                 </WinResult>
               ) : (
                 <LoseResult>
