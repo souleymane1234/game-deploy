@@ -107,7 +107,7 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   // Connexion WebSocket
   useEffect(() => {
     const connectWebSocket = () => {
-      const ws = new WebSocket('ws://localhost:3001');
+      const ws = new WebSocket('wss://jeu-socket.onrender.com'); // Remplacez par votre URL WebSocket
       wsRef.current = ws;
 
       ws.onopen = () => {
