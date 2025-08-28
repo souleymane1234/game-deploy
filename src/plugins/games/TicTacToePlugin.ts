@@ -9,7 +9,7 @@ const TicTacToePlugin: GamePlugin = {
   type: 'iframe',
   isEnabled: true,
   iframeConfig: {
-    src: 'https://tictactoe-beige-tau.vercel.app/', // Port du projet TicTacToe
+    src: 'https://new-tictac-xi.vercel.app', // Port du projet TicTacToe
     allowFullscreen: true,
     sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups',
     title: 'Tic Tac Toe'
