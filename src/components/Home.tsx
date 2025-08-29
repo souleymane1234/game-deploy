@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { usePluginManager } from '../plugins/PluginManager';
 // import { usePluginManager } from '../plugins/Text';
-import { X, Eye, EyeOff, Plus, Mail, Phone, Lock, ChevronRight, Star, Award, TrendingUp, Clock, Gift, Calendar, Users, Zap, Shield, Bell, Wallet, ArrowDownCircle, ArrowUpCircle, CreditCard } from 'lucide-react';
+import { X, Eye, EyeOff, Plus, Mail, Phone, Lock, ChevronRight, Star, Award, TrendingUp, Clock, Gift, Calendar, Users, Zap, Shield, Bell, Wallet, ArrowDownCircle, ArrowUpCircle, CreditCard, Menu } from 'lucide-react';
 import BalanceService from '../services/BalanceService';
 
 
@@ -71,6 +71,10 @@ const FreeMoney = styled.div`
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 600;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 `;
 
 const Navigation = styled.nav`
@@ -121,16 +125,73 @@ const AuthSection = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+`;
+
+const MobileRight = styled.div`
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: 767px) {
+    display: flex;
+  }
+`;
+
+const MobileMenuButton = styled.button`
+  background: transparent;
+  border: 1px solid #334155;
+  color: #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+const MobileMenuPanel = styled.div`
+  position: absolute;
+  right: 1rem;
+  top: 4.25rem;
+  z-index: 10000;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid #334155;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  width: 14rem;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileMenuItem = styled.button<{ variant?: 'deposit' | 'withdraw' | 'default' }>`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: ${({ variant }) => variant === 'deposit' ? 'linear-gradient(90deg, #16a34a, #22c55e)' : variant === 'withdraw' ? 'linear-gradient(90deg, #ef4444, #f97316)' : 'transparent'};
+  color: ${({ variant }) => variant ? 'white' : '#e5e7eb'};
+  border: 1px solid ${({ variant }) => variant === 'deposit' ? '#22c55e' : variant === 'withdraw' ? '#f97316' : 'transparent'};
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-align: left;
 `;
 
 const BalanceBadge = styled.div`
   background: rgba(34, 197, 94, 0.15);
   border: 1px solid #22c55e;
   color: #bbf7d0;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.5rem;
   border-radius: 9999px;
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 `;
 
 const LoginButton = styled.button`
@@ -194,6 +255,36 @@ const HeroImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+`;
+
+const SlideImage = styled.img<{ active: boolean }>`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: ${p => (p.active ? 1 : 0)};
+  transition: opacity 0.6s ease;
+`;
+
+const Dots = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  z-index: 2;
+`;
+
+const Dot = styled.button<{ active?: boolean }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  background: ${p => (p.active ? '#ffffff' : 'rgba(255,255,255,0.5)')};
 `;
 
 const HeroContent = styled.div`
@@ -1431,6 +1522,7 @@ const Home = () => {
 
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [depositPhone, setDepositPhone] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
@@ -2256,6 +2348,50 @@ const [sportOdds] = useState([
     }
   `;
 
+  const slides = [
+    {
+      id: 'ferrari',
+      image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&h=600&fit=crop&crop=center',
+      title: (
+        <>
+          Ferrari 296 GTB,<br />
+          produits Apple et FS<br />
+          dans LUCKY DRIVE
+        </>
+      )
+    },
+    {
+      id: 'casino',
+      image: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=1200&h=600&fit=crop&crop=center',
+      title: (
+        <>
+          Bonus jusqu'à 500%<br />
+          Cashback 30%<br />
+          sur vos jeux favoris
+        </>
+      )
+    },
+    {
+      id: 'sports',
+      image: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1200&h=600&fit=crop&crop=center',
+      title: (
+        <>
+          Pariez sur le sport<br />
+          Cotes boostées<br />
+          chaque semaine
+        </>
+      )
+    }
+  ];
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide(s => (s + 1) % slides.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
   return (
     <Container>
       {/* Header */}
@@ -2294,10 +2430,35 @@ const [sportOdds] = useState([
               <LoginButton onClick={() => setShowLogin(true)}>Connexion</LoginButton>
               <SignupButton onClick={() => setShowRegister(true)}>+ Inscription</SignupButton>
             </AuthSection>
+
+            <MobileRight>
+              <BalanceBadge>{balance} XOF</BalanceBadge>
+              <MobileMenuButton onClick={() => setShowMobileMenu(v => !v)}>
+                <Menu size={20} />
+              </MobileMenuButton>
+            </MobileRight>
           </HeaderContent>
         </HeaderContainer>
       </Header>
-      
+
+      {showMobileMenu && (
+        <MobileMenuPanel>
+          <MobileMenuItem variant="deposit" onClick={() => { setShowDeposit(true); setShowMobileMenu(false); }}>
+            <ArrowDownCircle size={18} /> Dépôt
+          </MobileMenuItem>
+          <MobileMenuItem variant="withdraw" onClick={() => { setShowWithdraw(true); setShowMobileMenu(false); }} style={{ marginTop: 6 }}>
+            <ArrowUpCircle size={18} /> Retrait
+          </MobileMenuItem>
+          <div style={{ height: 6 }} />
+          <MobileMenuItem onClick={() => { setShowLogin(true); setShowMobileMenu(false); }}>
+            <Lock size={18} /> Connexion
+          </MobileMenuItem>
+          <MobileMenuItem onClick={() => { setShowRegister(true); setShowMobileMenu(false); }} style={{ marginTop: 6 }}>
+            <Plus size={18} /> Inscription
+          </MobileMenuItem>
+        </MobileMenuPanel>
+      )}
+
       {showDeposit && (
         <OverlayWrapper>
           <OverlayCard>
@@ -2414,18 +2575,20 @@ const [sportOdds] = useState([
           {/* Hero Section */}
           <HeroSection>
             <HeroOverlay />
-            <HeroImage 
-              src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=400&fit=crop&crop=center"
-              alt="Ferrari"
-            />
+            {slides.map((s, idx) => (
+              <SlideImage key={s.id} src={s.image} alt={s.id} active={idx === currentSlide} />
+            ))}
             <HeroContent>
               <HeroTitle>
-                Ferrari 296 GTB,<br />
-                produits Apple et FS<br />
-                dans LUCKY DRIVE
+                {slides[currentSlide].title}
               </HeroTitle>
               <HeroButton>Participer</HeroButton>
             </HeroContent>
+            <Dots>
+              {slides.map((_, idx) => (
+                <Dot key={idx} active={idx === currentSlide} onClick={() => setCurrentSlide(idx)} />)
+              )}
+            </Dots>
           </HeroSection>
 
           {/* Promotions */}
