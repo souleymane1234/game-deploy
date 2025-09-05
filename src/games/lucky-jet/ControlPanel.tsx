@@ -28,6 +28,8 @@ interface ControlPanelProps {
   profit: number;
   isPlaying: boolean;
   gameState: 'waiting' | 'running' | 'crashed';
+  totalBet: number;
+  totalWon: number;
 }
 
 const PanelContainer = styled.div`
@@ -72,6 +74,31 @@ const ProfitAmount = styled.div<{ profit: number }>`
   font-size: 16px;
   font-weight: 600;
   color: ${props => props.profit > 0 ? '#00ff88' : props.profit < 0 ? '#ff4444' : 'rgba(255, 255, 255, 0.7)'};
+`;
+
+const TotalsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+`;
+
+const TotalCard = styled.div`
+  background: #404040;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+`;
+
+const TotalTitle = styled.div`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 4px;
+`;
+
+const TotalAmount = styled.div<{ color?: string }>`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${props => props.color || '#ffffff'};
 `;
 
 const ModeToggle = styled.div`
@@ -281,7 +308,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   balance,
   profit,
   isPlaying,
-  gameState
+  gameState,
+  totalBet,
+  totalWon
 }) => {
   const handleBetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
@@ -325,54 +354,70 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   return (
     <PanelContainer>
       <BalanceSection>
-        <BalanceTitle>BALANCE</BalanceTitle>
+        <BalanceTitle>SOLDE</BalanceTitle>
         <BalanceAmount>{balance.toLocaleString()} FCFA</BalanceAmount>
         <ProfitAmount profit={profit}>
           {profit > 0 ? '+' : ''}{profit.toLocaleString()} FCFA
         </ProfitAmount>
       </BalanceSection>
 
+      <TotalsGrid>
+        <TotalCard>
+          <TotalTitle>TOTAL MISÉ (MANCHE)</TotalTitle>
+          <TotalAmount color="#00d1b2">{Math.floor(totalBet).toLocaleString()} FCFA</TotalAmount>
+        </TotalCard>
+        <TotalCard>
+          <TotalTitle>TOTAL GAGNÉ (MANCHE)</TotalTitle>
+          <TotalAmount color="#00ff88">{Math.floor(totalWon).toLocaleString()} FCFA</TotalAmount>
+        </TotalCard>
+      </TotalsGrid>
+
+      <div style={{ color: '#ffffff', opacity: 0.8, fontSize: 12 }}>
+        JOUEURS DANS LA MANCHE : {players.filter(p => p.isPlaying).length}
+      </div>
+
       <div>
-        <InputLabel>GAME MODE</InputLabel>
+        <InputLabel>MODE DE JEU</InputLabel>
         <ModeToggle>
           <ModeButton
             active={gameMode === 'manual'}
             onClick={() => setGameMode('manual')}
           >
-            MANUAL
+            MANUEL
           </ModeButton>
           <ModeButton
             active={gameMode === 'auto'}
             onClick={() => setGameMode('auto')}
           >
-            AUTO
+            AUTOMATIQUE
           </ModeButton>
         </ModeToggle>
       </div>
 
       <InputGroup>
-        <InputLabel>BET AMOUNT</InputLabel>
+        <InputLabel>MONTANT DE LA MISE</InputLabel>
         <InputContainer>
           <Input
             type="number"
-            value={betAmount}
+            value={Math.floor(betAmount)}
             onChange={handleBetChange}
             placeholder="0"
             min="0"
             max={balance}
+            step={1}
           />
           <CurrencyLabel>FCFA</CurrencyLabel>
         </InputContainer>
         <QuickButtons>
           <QuickButton onClick={() => handleQuickBet(0.5)}>1/2</QuickButton>
           <QuickButton onClick={() => handleQuickBet(2)}>2x</QuickButton>
-          <QuickButton onClick={handleMaxBet}>MAX</QuickButton>
+          <QuickButton onClick={handleMaxBet}>MAXI</QuickButton>
         </QuickButtons>
       </InputGroup>
 
       {gameMode === 'auto' && (
         <InputGroup>
-          <InputLabel>AUTO CASHOUT</InputLabel>
+          <InputLabel>RETRAIT AUTOMATIQUE</InputLabel>
           <InputContainer>
             <Input
               type="number"
@@ -382,7 +427,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               min="1.01"
               step="0.01"
             />
-            <CurrencyLabel>x</CurrencyLabel>
+            <CurrencyLabel>×</CurrencyLabel>
           </InputContainer>
         </InputGroup>
       )}
@@ -393,17 +438,21 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        {getGameButtonText()}
+        {(() => {
+          if (gameState === 'crashed') return 'JEU CRASHÉ';
+          if (isPlaying) return 'RETIRER';
+          return 'PLACER LA MISE';
+        })()}
       </GameButton>
 
       <PlayersSection>
-        <PlayersTitle>PLAYERS</PlayersTitle>
+        <PlayersTitle>JOUEURS</PlayersTitle>
         {players.map(player => (
           <PlayerItem key={player.id} isActive={player.isPlaying || false}>
             <PlayerAvatar>{player.avatar}</PlayerAvatar>
             <PlayerInfo>
-              <PlayerName>{player.name}</PlayerName>
-              <PlayerAmount>{player.amount.toLocaleString()} FCFA</PlayerAmount>
+              <PlayerName>{player.name.length > 3 ? player.name.substring(0, 3) + "..." : player.name}</PlayerName>
+              <PlayerAmount>{Math.floor(player.amount).toLocaleString()} FCFA</PlayerAmount>
             </PlayerInfo>
             {player.hasMultiplier && player.cashoutMultiplier && (
               <PlayerMultiplier hasMultiplier={true}>

@@ -69,6 +69,42 @@ const Planets = styled.div`
   z-index: 3;
 `;
 
+const LoadingOverlay = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+`;
+
+const PartnerContainer = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(22, 33, 62, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+`;
+
+const PartnerText = styled.div`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.5px;
+`;
+
+const PartnerLogo = styled.div`
+  width: 140px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Planet = styled.div<{ size: number; x: number; y: number; color: string }>`
   position: absolute;
   width: ${props => props.size}px;
@@ -167,10 +203,9 @@ const MultiplierValue = styled.div<{ gameState: string }>`
   }};
   margin-bottom: 12px;
   transition: color 0.1s ease, text-shadow 0.1s ease;
-  
-  @media (max-width: 768px) {
-    font-size: 48px;
-  }
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: ${props => props.gameState === 'running' ? 'rgba(0, 0, 0, 0.35)' : 'transparent'};
 `;
 
 const StatusText = styled.div`
@@ -223,6 +258,20 @@ const CharacterContainer = styled(motion.div)`
   }
 `;
 
+const Trail = styled.div<{ widthPct: number; angleDeg: number }>`
+  position: absolute;
+  left: 10%;
+  bottom: 20%;
+  width: ${props => Math.max(0, Math.min(80, props.widthPct))}%;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(255,165,0,0.0), rgba(255,165,0,0.8) 40%, rgba(255,255,255,0.9));
+  filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.7));
+  transform-origin: left center;
+  transform: rotate(${props => props.angleDeg}deg);
+  z-index: 7;
+  border-radius: 4px;
+`;
+
 const Character = styled.img`
   width: 200px;
   height: 200px;
@@ -253,11 +302,11 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
   const getStatusText = () => {
     switch (gameState) {
       case 'waiting':
-        return countdown > 0 ? `STARTING IN ${countdown}` : 'GET READY';
+        return countdown > 0 ? `DÉMARRAGE DANS ${countdown}` : 'PRÉPAREZ-VOUS';
       case 'running':
-        return 'GAME RUNNING';
+        return 'PARTIE EN COURS';
       case 'crashed':
-        return `CRASHED AT ${crashPoint.toFixed(2)}x`;
+        return `CRASH À ${crashPoint.toFixed(2)}x`;
       default:
         return '';
     }
@@ -270,6 +319,13 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
     return `${currentMultiplier.toFixed(2)}x`;
   };
 
+  // Calcule une position de l'avion en fonction du multiplicateur
+  const progress = Math.max(0, Math.min(1, currentMultiplier / 10)); // normalisé sur 10x
+  const planeX = 10 + progress * 70; // 10% -> 80%
+  const planeY = 70 - progress * 40; // 70% -> 30%
+  const trailWidth = progress * 70; // longueur de la traînée
+  const trailAngle = -15; // angle léger vers le haut
+
   return (
     <GameContainer>
       <SpaceBackground />
@@ -280,6 +336,30 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
         <Planet size={80} x={85} y={80} color="#14B8A6" />
         <Planet size={60} x={80} y={15} color="#64748B" />
       </Planets>
+
+      {/* {gameState === 'waiting' && countdown > 0 && (
+        <LoadingOverlay
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <PartnerContainer
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <PartnerLogo>
+              <svg width="140" height="40" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="276" height="76" rx="12" fill="#0b1220" stroke="#00ff88" strokeWidth="4" />
+                <circle cx="40" cy="40" r="18" fill="#00ff88" />
+                <path d="M34 40 L40 30 L46 40 L40 50 Z" fill="#0b1220" />
+                <text x="80" y="48" fill="#ffffff" fontSize="28" fontWeight="700" fontFamily="Verdana, Geneva, Tahoma, sans-serif">PARTENAIRE</text>
+              </svg>
+            </PartnerLogo>
+            <PartnerText>Chargement de la partie…</PartnerText>
+          </PartnerContainer>
+        </LoadingOverlay>
+      )} */}
 
       <PreviousResults>
         {gameHistory.slice(0, 10).map((result, index) => (
@@ -305,63 +385,70 @@ const GameDisplay: React.FC<GameDisplayProps> = ({
         <StatusText>{getStatusText()}</StatusText>
       </MultiplierDisplay>
 
+      {gameState === 'running' && (
+        <Trail widthPct={trailWidth} angleDeg={trailAngle} />
+      )}
+
       {gameState === 'running' && isPlaying && (
         <CashoutButton
           onClick={onCashout}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          CASHOUT
+          RETIRER
         </CashoutButton>
       )}
 
-             {gameState === 'running' && (
-         <CharacterContainer
-           animate={{
-             y: [0, -15, 0],
-             rotate: [0, 1, -1, 0],
-             scale: [1, 1.05, 1]
-           }}
-           transition={{
-             duration: 3,
-             repeat: Infinity,
-             ease: "easeInOut"
-           }}
-         >
-           <Character src="/players/NewCharacter.png" alt="Character" />
-         </CharacterContainer>
-       )}
+      {gameState === 'running' && (
+        <CharacterContainer
+          animate={{
+            left: `${planeX}%`,
+            top: `${planeY}%`,
+            y: [0, -15, 0],
+            rotate: [0, 1, -1, 0],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{
+            duration: 0.6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{ left: `${planeX}%`, top: `${planeY}%` }}
+        >
+          <Character src="/players/NewCharacter.png" alt="Character" />
+        </CharacterContainer>
+      )}
 
-       {gameState === 'waiting' && (
-         <CharacterContainer
-           animate={{
-             scale: [1, 1.1, 1]
-           }}
-           transition={{
-             duration: 2,
-             repeat: Infinity,
-             ease: "easeInOut"
-           }}
-         >
-           <Character src="/players/NewCharacter.png" alt="Character" />
-         </CharacterContainer>
-       )}
+      {gameState === 'waiting' && (
+        <CharacterContainer
+          animate={{
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <Character src="/players/NewCharacter.png" alt="Character" />
+        </CharacterContainer>
+      )}
 
-             {gameState === 'crashed' && (
-         <CharacterContainer
-           animate={{
-             y: [0, 300],
-             rotate: [0, 720],
-             scale: [1, 0.5]
-           }}
-           transition={{
-             duration: 2,
-             ease: "easeIn"
-           }}
-         >
-           <Character src="/players/NewCharacter.png" alt="Character" />
-         </CharacterContainer>
-       )}
+      {gameState === 'crashed' && (
+        <CharacterContainer
+          animate={{
+            y: [0, 300],
+            rotate: [0, 720],
+            scale: [1, 0.5]
+          }}
+          transition={{
+            duration: 2,
+            ease: "easeIn"
+          }}
+        >
+          <Character src="/players/NewCharacter.png" alt="Character" />
+        </CharacterContainer>
+      )}
     </GameContainer>
   );
 };

@@ -87,7 +87,37 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   multiplierRef.current = currentMultiplier;
   const [players, setPlayers] = useState<Player[]>([
     { id: 1, name: 'You', avatar: '👤', amount: 0, isPlaying: false, hasMultiplier: false },
-    { id: 2, name: 'Alex', avatar: '🎮', amount: 500, isPlaying: true, hasMultiplier: false }
+    { id: 2, name: 'Alex', avatar: '🎮', amount: 500, isPlaying: true, hasMultiplier: false },
+    { id: 3, name: 'Mia', avatar: '🦊', amount: 350, isPlaying: false, hasMultiplier: false },
+    { id: 4, name: 'Leo', avatar: '🐯', amount: 1200, isPlaying: true, hasMultiplier: false },
+    { id: 5, name: 'Zoe', avatar: '🦄', amount: 760, isPlaying: false, hasMultiplier: false },
+    { id: 6, name: 'Noah', avatar: '🐼', amount: 980, isPlaying: true, hasMultiplier: false },
+    { id: 7, name: 'Ava', avatar: '🦋', amount: 410, isPlaying: false, hasMultiplier: false },
+    { id: 8, name: 'Liam', avatar: '🦁', amount: 1500, isPlaying: true, hasMultiplier: false },
+    { id: 9, name: 'Emma', avatar: '🐱', amount: 220, isPlaying: false, hasMultiplier: false },
+    { id: 10, name: 'Ethan', avatar: '🐶', amount: 890, isPlaying: true, hasMultiplier: false },
+    { id: 11, name: 'Olivia', avatar: '🦉', amount: 1340, isPlaying: false, hasMultiplier: false },
+    { id: 12, name: 'Lucas', avatar: '🐨', amount: 640, isPlaying: true, hasMultiplier: false },
+    { id: 13, name: 'Chloe', avatar: '🦊', amount: 270, isPlaying: false, hasMultiplier: false },
+    { id: 14, name: 'Mason', avatar: '🐵', amount: 1120, isPlaying: true, hasMultiplier: false },
+    { id: 15, name: 'Sophia', avatar: '🦄', amount: 730, isPlaying: false, hasMultiplier: false },
+    { id: 16, name: 'James', avatar: '🦁', amount: 990, isPlaying: true, hasMultiplier: false },
+    { id: 17, name: 'Isla', avatar: '🕊️', amount: 455, isPlaying: false, hasMultiplier: false },
+    { id: 18, name: 'Mateo', avatar: '🐯', amount: 1680, isPlaying: true, hasMultiplier: false },
+    { id: 19, name: 'Ella', avatar: '🐣', amount: 305, isPlaying: false, hasMultiplier: false },
+    { id: 20, name: 'Henry', avatar: '🐻', amount: 845, isPlaying: true, hasMultiplier: false },
+    { id: 21, name: 'Aria', avatar: '🦋', amount: 1210, isPlaying: false, hasMultiplier: false },
+    { id: 22, name: 'Jack', avatar: '🐼', amount: 690, isPlaying: true, hasMultiplier: false },
+    { id: 23, name: 'Luna', avatar: '🌙', amount: 240, isPlaying: false, hasMultiplier: false },
+    { id: 24, name: 'Logan', avatar: '🐺', amount: 1030, isPlaying: true, hasMultiplier: false },
+    { id: 25, name: 'Maya', avatar: '🌸', amount: 520, isPlaying: false, hasMultiplier: false },
+    { id: 26, name: 'Theo', avatar: '🦊', amount: 1320, isPlaying: true, hasMultiplier: false },
+    { id: 27, name: 'Nora', avatar: '🦢', amount: 415, isPlaying: false, hasMultiplier: false },
+    { id: 28, name: 'Owen', avatar: '🦅', amount: 870, isPlaying: true, hasMultiplier: false },
+    { id: 29, name: 'Ivy', avatar: '🍀', amount: 275, isPlaying: false, hasMultiplier: false },
+    { id: 30, name: 'Caleb', avatar: '🐗', amount: 940, isPlaying: true, hasMultiplier: false },
+    { id: 31, name: 'Ruby', avatar: '💎', amount: 1260, isPlaying: false, hasMultiplier: false },
+    { id: 32, name: 'Wyatt', avatar: '🐊', amount: 780, isPlaying: true, hasMultiplier: false }
   ]);
   const [gameHistory, setGameHistory] = useState<GameResult[]>([
     { multiplier: 1.77, timestamp: Date.now() - 10000 },
@@ -103,6 +133,10 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   ]);
   
   const wsRef = useRef<WebSocket | null>(null);
+
+  // Totaux par manche
+  const [totalBet, setTotalBet] = useState<number>(0);
+  const [totalWon, setTotalWon] = useState<number>(0);
 
   // Connexion WebSocket
   useEffect(() => {
@@ -142,6 +176,37 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
               setGameTime(0);
               setIsPlaying(false);
               setProfit(0);
+              // Reset des totaux pour la nouvelle manche
+              setTotalBet(0);
+              setTotalWon(0);
+
+              // Préparer une nouvelle répartition aléatoire des joueurs qui vont miser
+              setPlayers(prev => prev.map(player => {
+                if (player.id === 1) {
+                  // Le joueur principal reste contrôlé par l'UI
+                  return { ...player, isPlaying: player.isPlaying ?? false, hasMultiplier: false, multiplier: undefined, cashoutMultiplier: undefined };
+                }
+                // 45% de chance qu'un joueur participe à la prochaine manche
+                const willPlay = Math.random() < 0.45;
+                const randomAmount = willPlay ? (Math.floor(Math.random() * 2000) + 100) : player.amount;
+                return {
+                  ...player,
+                  isPlaying: willPlay,
+                  hasMultiplier: false,
+                  multiplier: undefined,
+                  cashoutMultiplier: undefined,
+                  amount: willPlay ? randomAmount : player.amount
+                };
+              }));
+
+              // Calculer le total parié après la répartition
+              setTimeout(() => {
+                setPlayers(prev => {
+                  const sum = prev.filter(p => p.isPlaying && p.id !== 1).reduce((acc, p) => acc + p.amount, 0);
+                  setTotalBet(sum + (isPlaying ? betAmount : 0));
+                  return prev;
+                });
+              }, 0);
             }
             
             // Gérer le crash - redémarrer automatiquement
@@ -260,6 +325,8 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
       const playerUpdateInterval = setInterval(() => {
         setPlayers(prev => {
           let hasChanges = false;
+          let winningsToAdd = 0;
+          let betsToAdd = 0;
           const updatedPlayers = prev.map(player => {
             if (player.id === 1) return player; // Ne pas modifier le joueur principal
             
@@ -267,6 +334,7 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
             if (player.isPlaying && Math.random() < 0.015) { // 1.5% de chance par seconde
               hasChanges = true;
               const cashoutMultiplier = multiplierRef.current + Math.random() * 0.5;
+              winningsToAdd += Math.floor(player.amount * cashoutMultiplier);
               return {
                 ...player,
                 isPlaying: false,
@@ -280,6 +348,7 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
             if (!player.isPlaying && Math.random() < 0.008) { // 0.8% de chance par seconde
               hasChanges = true;
               const randomAmount = Math.floor(Math.random() * 2000) + 100; // 100-2100 FCFA
+              betsToAdd += randomAmount;
               return {
                 ...player,
                 isPlaying: true,
@@ -291,6 +360,13 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
             return player;
           });
           
+          if (winningsToAdd > 0) {
+            setTotalWon(prevTotal => prevTotal + winningsToAdd);
+          }
+          if (betsToAdd > 0) {
+            setTotalBet(prevTotal => prevTotal + betsToAdd);
+          }
+
           return hasChanges ? updatedPlayers : prev;
         });
       }, 1500); // Mise à jour moins fréquente pour de meilleures performances
@@ -302,10 +378,11 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
   // Fonction de cashout
   const handleCashout = useCallback(() => {
     if (gameState === 'running' && isPlaying) {
-      const winnings = betAmount * currentMultiplier;
+      const winnings = Math.floor(betAmount * currentMultiplier);
       balanceService.addWinnings(winnings);
       setProfit(winnings);
       setIsPlaying(false);
+      setTotalWon(prev => prev + winnings);
       
       // Mettre à jour le joueur principal
       setPlayers(prev => prev.map(player => 
@@ -322,11 +399,12 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
       balanceService.placeBet(betAmount);
       setIsPlaying(true);
       setProfit(0);
+      setTotalBet(prev => prev + Math.floor(betAmount));
       
       // Mettre à jour le joueur principal
       setPlayers(prev => prev.map(player => 
         player.id === 1 
-          ? { ...player, isPlaying: true, hasMultiplier: false, amount: betAmount }
+          ? { ...player, isPlaying: true, hasMultiplier: false, amount: Math.floor(betAmount) }
           : player
       ));
     }
@@ -367,6 +445,8 @@ const LuckyJetGame: React.FC<LuckyJetGameProps> = ({ balance, setBalance }) => {
         profit={profit}
         isPlaying={isPlaying}
         gameState={gameState}
+        totalBet={totalBet}
+        totalWon={totalWon}
       />
     </GameContainer>
   );
